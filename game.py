@@ -24,7 +24,7 @@ while True:
         if i.type == pygame.KEYDOWN:
             if i.key == pygame.K_ESCAPE:
                 quit()
-        if i.type == pygame.MOUSEBUTTONDOWN:
+        if i.type == pygame.MOUSEBUTTONDOWN and i.button == 2:
             lastcamx = mpos[0]
             lastcamy = mpos[1]
             moving = True
@@ -54,7 +54,7 @@ while True:
     if pressed[pygame.K_w]:
         mlevel.ycamera -= 10
     for i in warriors:
-        i.render(screen)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera)
         i.update()
 
     pygame.display.update()

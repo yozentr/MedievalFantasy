@@ -21,7 +21,10 @@ class Level:
             self.scale *= 0.9
             self.background = pygame.transform.scale(self.backgroundorig, [self.backgroundorig.get_width() * self.scale, self.backgroundorig.get_height() * self.scale])
     def load(self, warriors):
+        #print(1)
         data = pytmx.load_pygame('Tiled/World.tmx')
+        #print(2)
         for x, y, gid in data.get_layer_by_name('Spawners'):
-            warrior = player.Warrior(x, y)
-            warriors.append(warrior)
+            if gid != 0:
+                warrior = player.Warrior(x * 64, y * 64)
+                warriors.append(warrior)

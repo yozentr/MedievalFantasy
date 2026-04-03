@@ -10,7 +10,7 @@
         },
         "Buildings.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.33,
+            "scaleInDock": 0.25,
             "scaleInEditor": 1
         },
         "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Tileset/Monastery.tsx": {
@@ -45,6 +45,10 @@
             "scaleInDock": 0.75,
             "scaleInEditor": 1
         },
+        "Warrior_Idle.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
         "Water Background color.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1
@@ -59,10 +63,10 @@
         },
         "World.tmx": {
             "scale": 0.75,
-            "selectedLayer": 3,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 3224,
-                "y": 2153.333333333333
+                "x": 3713.333333333333,
+                "y": 3745.333333333333
             }
         },
         "World.tmx#Decorations": {
@@ -75,22 +79,23 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Decorations/Rubber Duck",
+    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Units/Blue Units/Warrior",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "World.tmx",
         "Tilemap_color2.tsx",
         "Tilemap_color3.tsx",
         "Tilemap_color5.tsx",
-        "Buildings.tsx"
+        "Warrior_Idle.tsx"
     ],
     "project": "EarthWorld.tiled-project",
     "recentFiles": [
-        "Buildings.tsx",
+        "Warrior_Idle.tsx",
         "Tilemap_color5.tsx",
         "Tilemap_color3.tsx",
         "Tilemap_color2.tsx",
         "World.tmx",
+        "Buildings.tsx",
         "House1.tsx",
         "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Tileset/Monastery.tsx",
         "House2.tsx",
@@ -101,8 +106,8 @@
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 64,
-        "width": 64
+        "height": 192,
+        "width": 192
     },
-    "tileset.type": 1
+    "tileset.type": 0
 }

@@ -11,10 +11,12 @@ class Animation:
         self.repeat = repeat
     def render(self, screen, x, y, dir):
         if dir == 'right':
-            screen.blit(self.images[self.index], [x, y])
+            self.hitbox = screen.blit(self.images[self.index], [x, y])
+            return self.hitbox
         else:
             i = pygame.transform.flip(self.images[self.index], True, False)
-            screen.blit(i, [x, y])
+            self.hitbox = screen.blit(i, [x, y])
+            return self.hitbox
     def update(self):
         self.period -= 1
         if self.period == 0:
