@@ -11,13 +11,11 @@ mlevel = level.Level()
 lastcamx = mlevel.xcamera
 lastcamy = mlevel.ycamera
 moving = False
-countwheel = 0
 warriors = []
 mlevel.load(warriors)
 while True:
     fps.tick(60)
     screen.fill('black')
-    mlevel.render(screen)
     events = pygame.event.get()
     mpos = pygame.mouse.get_pos()
     for i in events:
@@ -28,34 +26,33 @@ while True:
             lastcamx = mpos[0]
             lastcamy = mpos[1]
             moving = True
-        if i.type == pygame.MOUSEBUTTONUP:
+        if i.type == pygame.MOUSEBUTTONUP and i.button == 2:
             moving = False
         if i.type == pygame.MOUSEWHEEL:
-            if i.y > 0 and countwheel <= 4:
-                mlevel.resize_everything(1)
-                countwheel += 1
-            elif countwheel >= -1 and i.y < 0 : 
-                mlevel.resize_everything(0)
-                countwheel -= 1
+            if i.y > 0:
+                mlevel.resize_everything(1, mpos)
+            elif i.y < 0:
+                mlevel.resize_everything(0, mpos)
     if moving == True:
         dx = mpos[0] - lastcamx
         dy = mpos[1] - lastcamy
-        mlevel.xcamera -= dx
-        mlevel.ycamera -= dy
+        mlevel.xcamera -= dx / mlevel.scale
+        mlevel.ycamera -= dy / mlevel.scale
         lastcamx = mpos[0]
         lastcamy = mpos[1]
     pressed = pygame.key.get_pressed()
+    camera_step = 10 / mlevel.scale
     if pressed[pygame.K_a]:
-        mlevel.xcamera -= 10
+        mlevel.xcamera -= camera_step
     if pressed[pygame.K_d]:
-        mlevel.xcamera += 10
+        mlevel.xcamera += camera_step
     if pressed[pygame.K_s]:
-        mlevel.ycamera += 10
+        mlevel.ycamera += camera_step
     if pressed[pygame.K_w]:
-        mlevel.ycamera -= 10
+        mlevel.ycamera -= camera_step
+    mlevel.render(screen)
     for i in warriors:
-        i.render(screen, mlevel.xcamera, mlevel.ycamera)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         i.update()
 
     pygame.display.update()
-

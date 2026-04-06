@@ -9,14 +9,18 @@ class Animation:
         self.period = period
         self.startperiod = period
         self.repeat = repeat
-    def render(self, screen, x, y, dir):
-        if dir == 'right':
-            self.hitbox = screen.blit(self.images[self.index], [x, y])
-            return self.hitbox
-        else:
-            i = pygame.transform.flip(self.images[self.index], True, False)
-            self.hitbox = screen.blit(i, [x, y])
-            return self.hitbox
+
+    def render(self, screen, x, y, dir, scale=1):
+        image = self.images[self.index]
+        if scale != 1:
+            width = max(1, round(image.get_width() * scale))
+            height = max(1, round(image.get_height() * scale))
+            image = pygame.transform.scale(image, [width, height])
+        if dir != 'right':
+            image = pygame.transform.flip(image, True, False)
+        self.hitbox = screen.blit(image, [round(x), round(y)])
+        return self.hitbox
+
     def update(self):
         self.period -= 1
         if self.period == 0:

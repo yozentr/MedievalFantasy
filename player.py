@@ -12,9 +12,12 @@ class Warrior:
         self.anims:dict[str, animation.Animation] = {}
         self.anims['attack1'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Attack1.png', 1, 4, 6, True)
         self.anims['idle'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Idle.png', 1, 8, 6, True)
-    def render(self, screen, xcamera, ycamera):
-        self.hitbox:pygame.Rect = self.anims[self.state].render(screen, self.x - xcamera, self.y - ycamera, 'right')
-        self.hitbox = self.hitbox.inflate(-90, -90)
+    def render(self, screen, xcamera, ycamera, scale=1):
+        screen_x = (self.x - xcamera) * scale
+        screen_y = (self.y - ycamera) * scale
+        self.hitbox:pygame.Rect = self.anims[self.state].render(screen, screen_x, screen_y, 'right', scale)
+        hitbox_shrink = round(90 * scale)
+        self.hitbox = self.hitbox.inflate(-hitbox_shrink, -hitbox_shrink)
         if self.select == True:
             screen.blit(self.selectimg, [self.hitbox.centerx - self.selectimg.get_width() / 2, self.hitbox.centery - self.selectimg.get_height() / 2])
     def update(self):
@@ -25,4 +28,3 @@ class Warrior:
                     self.select = False
                 else:
                     self.select = True
-
