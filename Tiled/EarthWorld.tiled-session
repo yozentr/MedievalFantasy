@@ -10,8 +10,8 @@
         },
         "Buildings.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.25,
-            "scaleInEditor": 1
+            "scaleInDock": 0.33,
+            "scaleInEditor": 0.5
         },
         "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Tileset/Monastery.tsx": {
             "scaleInDock": 1,
@@ -55,7 +55,9 @@
             "scaleInEditor": 1
         },
         "Tree3.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "Warrior_Idle.tsx": {
             "scaleInDock": 0.75,
@@ -74,11 +76,15 @@
             "scaleInEditor": 1
         },
         "World.tmx": {
+            "expandedGroupLayers": [
+                17,
+                14
+            ],
             "scale": 1,
-            "selectedLayer": 7,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 3964,
-                "y": 3837
+                "x": 3969,
+                "y": 3825
             }
         },
         "World.tmx#Decorations": {
@@ -100,10 +106,14 @@
         "Tilemap_color5.tsx",
         "Warrior_Idle.tsx",
         "Icon_09.tsx",
-        "Pawn_Idle.tsx"
+        "Pawn_Idle.tsx",
+        "Buildings.tsx",
+        "Tree3.tsx"
     ],
     "project": "EarthWorld.tiled-project",
     "recentFiles": [
+        "Tree3.tsx",
+        "Buildings.tsx",
         "Pawn_Idle.tsx",
         "Icon_09.tsx",
         "Warrior_Idle.tsx",
@@ -111,11 +121,9 @@
         "Tilemap_color3.tsx",
         "Tilemap_color2.tsx",
         "World.tmx",
-        "Buildings.tsx",
         "House1.tsx",
         "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Tileset/Monastery.tsx",
-        "House2.tsx",
-        "Water Rocks_01.tsx"
+        "House2.tsx"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",

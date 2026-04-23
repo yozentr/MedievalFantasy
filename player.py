@@ -42,12 +42,7 @@ class Warrior:
         else:
             self.state = 'idle'
     def moving(self, mlevel, units):
-        size = self.anims[self.state].what_size_of_img()
-        x = self.x + size[0] / 2
-        y = self.y + size[1] / 2
-        dx = self.targetx - x
-        dy = self.targety - y
-        distance = (dx * dx + dy * dy)**.5
+        distance, dx, dy, size = self.get_distance_to_target()
         if abs(distance) < 1:
             self.mustmove = False
             return
@@ -60,8 +55,6 @@ class Warrior:
             self.collisionx(mlevel, 'l')
             self.dir = 'l'
         self.y += dy * speed / distance
-
-        
         if dy > 0:
             self.collisiony(mlevel, 'd')
         else:
@@ -69,6 +62,13 @@ class Warrior:
         self.collision_units(units, mlevel)
         if abs(self.targetx - self.x - size[0] / 2) < 10 and abs(self.targety - self.y - size[1] / 2) < 10:
             self.mustmove = False
+    def get_distance_to_target(self):
+        size = self.anims[self.state].what_size_of_img()
+        x = self.x + size[0] / 2
+        y = self.y + size[1] / 2
+        dx = self.targetx - x
+        dy = self.targety - y
+        return (dx * dx + dy * dy)**.5, dx, dy, size
     def gethitbox(self):
         return pygame.rect.Rect([self.x, self.y], self.anims[self.state].what_size_of_img()).inflate(-140, -140)
     def collisionx(self, mlevel, dir):
@@ -120,3 +120,21 @@ class Pawn(Warrior):
         super().__init__(x, y)
         self.anims['idle'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Idle.png', 1, 8, 6, True)
         self.anims['run'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Run.png', 1, 6, 6, True)
+        self.anims['interact_axe'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Interact Axe.png', 1, 6, 6, True)
+        self.mission = None
+        self.target_obj = None
+    def render(self, screen, xcamera, ycamera, scale=1):
+        return super().render(screen, xcamera, ycamera, scale)
+    def update(self, click):
+        super().update(click)
+        if self.mission == 'felling tree' and self.get_distance_to_target()[0] < 10:
+            self.state = 'interact_axe'
+            if self.anims['interact_axe'].index == 3:
+                self.target_obj.hp -= 0.1
+            if self.targetx > self.hitbox.centerx:
+                self.dir = 'r'
+            else:
+                self.dir = 'l'
+        else:
+            pass
+

@@ -3,6 +3,9 @@ import animation
 import level
 import pytmx
 import decorations
+import utils
+import player
+import random
 
 pygame.init()
 info = pygame.display.Info()
@@ -14,6 +17,12 @@ lastcamy = mlevel.ycamera
 moving = False
 units = []
 decorations.loadtrees()
+cursor_arrow = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_01.png', 1)
+cursor_axe = utils.loadimg('images/UI Elements/UI Elements/Icons/Icon_02.png', 0.7)
+current_cursor = cursor_arrow
+hover_state = None
+
+pygame.mouse.set_visible(False)
 
 
 mlevel.load(units)
@@ -23,12 +32,20 @@ def clicknowhere():
         if hitbox.collidepoint(mpos[0] + mlevel.xcamera, mpos[1] + mlevel.ycamera):
             return False
     return True
+def felling_tree_mission(coords, tree):
+    for i in units:
+        if i.select == True and isinstance(i, player.Pawn):
+            i.mission = 'felling tree'
+            i.targetx = coords[0]
+            i.targety = coords[1]
+            i.target_obj = tree
 while True:
     fps.tick(60)
     screen.fill('black')
     events = pygame.event.get()
     mpos = pygame.mouse.get_pos()
     click = False
+    
 
     for i in events:
         if i.type == pygame.KEYDOWN:
@@ -76,7 +93,16 @@ while True:
         i.update(click)
         if i.mustmove == True:
             i.moving(mlevel, units)
+    hover_state = None
     for i in decorations.trees:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
+        if i.get_hitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
+            hover_state = 'tree'
+            current_cursor = cursor_axe
+            if click == True:
+                felling_tree_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
+    if hover_state == None:
+        current_cursor = cursor_arrow
 
+    screen.blit(current_cursor, mpos)
     pygame.display.update()
