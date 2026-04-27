@@ -15,8 +15,8 @@ class Level:
         self.background = self.backgroundorig
         self.scale = 1.0
         self.zoom_level = 0
-        self.xcamera = 0.0
-        self.ycamera = 0.0
+        self.xcamera = 3000
+        self.ycamera = 3000
         self.load_borders()
 
     def load_borders(self):
