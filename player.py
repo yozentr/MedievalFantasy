@@ -98,23 +98,28 @@ class Warrior:
         hitboxunit = self.gethitbox()
         for i in units:
             if i != self:
-                if hitboxunit.colliderect(i.gethitbox()):
-                    #self.mustmove = False
-                    dx = self.x - i.x
-                    dy = self.y - i.y
-                    distance = (dx * dx + dy * dy)**.5
-                    if abs(distance) < 1:
-                        return
-                    self.x += dx / distance * 5
-                    self.y += dy / distance * 5
-                    if dx > 0:
-                        self.collisionx(mlevel, 'r')
+                other_hitbox = i.gethitbox()
+                if hitboxunit.colliderect(other_hitbox):
+                    overlap = hitboxunit.clip(other_hitbox)
+                    if overlap.width <= 0 or overlap.height <= 0:
+                        continue
+
+                    if overlap.width < overlap.height:
+                        if hitboxunit.centerx < other_hitbox.centerx:
+                            self.x -= overlap.width
+                            self.collisionx(mlevel, 'l')
+                        else:
+                            self.x += overlap.width
+                            self.collisionx(mlevel, 'r')
                     else:
-                        self.collisionx(mlevel, 'l')
-                    if dy > 0:
-                        self.collisiony(mlevel, 'd')
-                    else:
-                        self.collisiony(mlevel, 'u')
+                        if hitboxunit.centery < other_hitbox.centery:
+                            self.y -= overlap.height
+                            self.collisiony(mlevel, 'u')
+                        else:
+                            self.y += overlap.height
+                            self.collisiony(mlevel, 'd')
+
+                    hitboxunit = self.gethitbox()
 class Pawn(Warrior):
     def __init__(self, x, y):
         super().__init__(x, y)
