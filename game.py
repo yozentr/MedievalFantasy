@@ -6,6 +6,7 @@ import decorations
 import utils
 import player
 import random
+import inventory
 
 pygame.init()
 info = pygame.display.Info()
@@ -103,9 +104,7 @@ while True:
                 felling_tree_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
     for i in decorations.stumps:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
-        if i.get_hitbox().collidepoint(mpos):
-            current_cursor = cursor_hand
-            hover_state = 'wood'
+    inventory.render(screen)
     if hover_state == None:
         current_cursor = cursor_arrow
 

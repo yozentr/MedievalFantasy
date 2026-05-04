@@ -4,10 +4,11 @@ import pygame
 import animation
 import bar
 import random
+import inventory
 
 imgtrees = utils.loadimages('images/Terrain/Resources/Wood/Trees/Tree3.png', 1, 8)
 imgstump = utils.loadimg('images/Terrain/Resources/Wood/Trees/Stump 3.png', 1)
-wood_resource = utils.loadimg('images/Terrain/Resources/Wood/Wood Resource/Wood Resource.png', 1)
+wood_resource = utils.loadimg('images/Terrain/Resources/Wood/Wood Resource/Wood Resource.png', 2)
 trees = []
 stumps = []
 
@@ -39,7 +40,7 @@ class Tree:
             screen.blit(imgstump, [self.x - xcamera, self.y - ycamera - 60])
             if self.dead == False:
                 for i in range(random.randint(1, 3)):
-                    stumps.append(Stump(self.x, self.y))
+                    stumps.append(Stump(self.x - xcamera, self.y - ycamera))
                 self.dead = True
             
     def get_hitbox(self):
@@ -47,11 +48,19 @@ class Tree:
     
 class Stump:
     def __init__(self, x, y):
-        self.x = x + random.randint(-30, 60) + 50
-        self.y = y + random.randint(-30, 60) + 50
+        self.x = x + random.randint(-60, 60) + 100
+        self.y = y + random.randint(-60, 60) + 100
+        self.starttimer = 60
+        inventory.add('Wood Resource', 1)
     def render(self, screen, xcamera, ycamera, scale):
-        screen.blit(wood_resource, [self.x - xcamera, self.y - ycamera])
-        pygame.draw.rect(screen, 'red', self.get_hitbox().move(-xcamera, -ycamera), 2)
-    def get_hitbox(self):
-        return pygame.rect.Rect([self.x, self.y], wood_resource.get_size())
+        self.starttimer -= 1
+        screen.blit(wood_resource, [self.x, self.y])
+        if self.starttimer == -500:
+            stumps.remove(self)
+        if self.starttimer < 1:
+            self.x += (0 - self.x) / 10 * (-self.starttimer / 100)
+            self.y += (screen.get_height() - self.y) / 10 * (-self.starttimer / 100)
+
+
+
 
