@@ -77,14 +77,14 @@
         },
         "World.tmx": {
             "expandedGroupLayers": [
-                17,
-                14
+                14,
+                17
             ],
             "scale": 1,
-            "selectedLayer": 6,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 3969,
-                "y": 3825
+                "x": 4096,
+                "y": 3633
             }
         },
         "World.tmx#Decorations": {

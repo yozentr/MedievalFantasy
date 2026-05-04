@@ -18,7 +18,8 @@ moving = False
 units = []
 decorations.loadtrees()
 cursor_arrow = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_01.png', 1)
-cursor_axe = utils.loadimg('images/UI Elements/UI Elements/Icons/Icon_02.png', 0.7)
+cursor_axe = utils.loadimg('images/UI Elements/UI Elements/Icons/Icon_01.png', 0.7)
+cursor_hand = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_02.png', 1)
 current_cursor = cursor_arrow
 hover_state = None
 
@@ -46,7 +47,6 @@ while True:
     mpos = pygame.mouse.get_pos()
     click = False
     
-
     for i in events:
         if i.type == pygame.KEYDOWN:
             if i.key == pygame.K_ESCAPE:
@@ -96,11 +96,16 @@ while True:
     hover_state = None
     for i in decorations.trees:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
-        if i.get_hitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
+        if i.get_hitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos) and i.dead == False:
             hover_state = 'tree'
             current_cursor = cursor_axe
             if click == True:
                 felling_tree_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
+    for i in decorations.stumps:
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
+        if i.get_hitbox().collidepoint(mpos):
+            current_cursor = cursor_hand
+            hover_state = 'wood'
     if hover_state == None:
         current_cursor = cursor_arrow
 
