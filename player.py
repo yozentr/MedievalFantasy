@@ -122,6 +122,7 @@ class Pawn(Warrior):
         self.anims['run'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Run.png', 1, 6, 6, True)
         self.anims['interact_axe'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Interact Axe.png', 1, 6, 6, True)
         self.anims['hold_wood'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Idle Wood.png', 1, 8, 6, True)
+        self.anims['interact_pickaxe'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Interact Pickaxe.png', 1, 6, 6, True)
         self.mission = None
         self.target_obj = None
     def render(self, screen, xcamera, ycamera, scale=1):

@@ -7,6 +7,7 @@ import utils
 import player
 import random
 import inventory
+import rightclick
 
 pygame.init()
 info = pygame.display.Info()
@@ -19,10 +20,11 @@ moving = False
 units = []
 decorations.loadtrees()
 cursor_arrow = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_01.png', 1)
-cursor_axe = utils.loadimg('images/UI Elements/UI Elements/Icons/Icon_01.png', 0.7)
+cursor_axe = utils.loadimg('images/Terrain/Resources/Tools/Tool_02.png', 1)
 cursor_hand = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_02.png', 1)
 current_cursor = cursor_arrow
 hover_state = None
+menu = None
 
 pygame.mouse.set_visible(False)
 
@@ -53,6 +55,7 @@ while True:
             if i.key == pygame.K_ESCAPE:
                 quit()
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
+            menu = None
             lastcamx = mpos[0]
             lastcamy = mpos[1]
             click = True
@@ -63,6 +66,11 @@ while True:
                         j.targetx = pygame.mouse.get_pos()[0] + mlevel.xcamera
                         j.targety = pygame.mouse.get_pos()[1] + mlevel.ycamera
                         j.mustmove = True
+        if i.type == pygame.MOUSEBUTTONDOWN and i.button == 3:
+            if menu == None:
+                menu = rightclick.Menu(mpos[0], mpos[1], ['House', 'alfredo', 'Castlee'])
+            else:
+                menu = None
         if i.type == pygame.MOUSEBUTTONUP and i.button == 1:
             moving = False
             click = False
@@ -81,12 +89,16 @@ while True:
     pressed = pygame.key.get_pressed()
     camera_step = 10 / mlevel.scale
     if pressed[pygame.K_a]:
+        menu = None
         mlevel.xcamera -= camera_step
     if pressed[pygame.K_d]:
+        menu = None
         mlevel.xcamera += camera_step
     if pressed[pygame.K_s]:
+        menu = None
         mlevel.ycamera += camera_step
     if pressed[pygame.K_w]:
+        menu = None
         mlevel.ycamera -= camera_step
     mlevel.render(screen)
     for i in units:
@@ -105,6 +117,8 @@ while True:
     for i in decorations.stumps:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     inventory.render(screen)
+    if menu != None:
+        menu.render(screen)
     if hover_state == None:
         current_cursor = cursor_arrow
 
