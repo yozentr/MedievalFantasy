@@ -141,4 +141,16 @@ class Pawn(Warrior):
                 self.dir = 'l'
         else:
             pass
+        if self.mission == 'mining stone' and self.get_distance_to_target()[0] < 10:
+            self.state = 'interact_pickaxe'
+            if self.anims['interact_pickaxe'].index == 3:
+                self.target_obj.hp -= 5
+                if self.target_obj.hp < 1:
+                    self.mission = None
+            if self.targetx > self.hitbox.centerx:
+                self.dir = 'r'
+            else:
+                self.dir = 'l'
+        else:
+            pass
 

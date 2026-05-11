@@ -9,6 +9,7 @@ import inventory
 imgtrees = utils.loadimages('images/Terrain/Resources/Wood/Trees/Tree3.png', 1, 8)
 imgstump = utils.loadimg('images/Terrain/Resources/Wood/Trees/Stump 3.png', 1)
 wood_resource = utils.loadimg('images/Terrain/Resources/Wood/Wood Resource/Wood Resource.png', 2)
+stone_resource = utils.loadimg('images/Terrain/Decorations/Rocks/Rock2.png', 2)
 trees = []
 stumps = []
 stones = []
@@ -74,9 +75,28 @@ class Stone:
         self.hp = 100
         self.bar = bar.Bar(100)
     def render(self, screen, xcamera, ycamera):
+        self.bar.val = self.hp
         screen.blit(self.img, (self.x - xcamera, self.y - ycamera))
+        pygame.draw.rect(screen, 'red', self.get_hitbox().move(-xcamera, -ycamera), 2)
         if self.hp != self.bar.maxval:
             self.bar.render(screen, self.x, self.y, xcamera, ycamera)
             if self.hp < 1:
                 stones.remove(self)
-            
+                for i in range(1):
+                    stumps.append(StoneResource(self.x - xcamera, self.y - ycamera))
+    def get_hitbox(self):
+        return pygame.rect.Rect([self.x, self.y], self.img.get_size())
+class StoneResource:
+    def __init__(self, x, y):
+        self.x = x + random.randint(-80, 80)
+        self.y = y + random.randint(-60, 60)
+        self.starttimer = 60
+        inventory.add('Stone Resource', 1)
+    def render(self, screen, xcamera, ycamera, scale):
+        self.starttimer -= 1
+        screen.blit(stone_resource, [self.x, self.y])
+        if self.starttimer == -500:
+            stumps.remove(self)
+        if self.starttimer < 1:
+            self.x += (0 - self.x) / 10 * (-self.starttimer / 100)
+            self.y += (screen.get_height() - self.y) / 10 * (-self.starttimer / 100)

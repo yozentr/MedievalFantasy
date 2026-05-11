@@ -22,6 +22,7 @@ decorations.loadtrees()
 cursor_arrow = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_01.png', 1)
 cursor_axe = utils.loadimg('images/Terrain/Resources/Tools/Tool_02.png', 1)
 cursor_hand = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_02.png', 1)
+cursor_pickaxe = utils.loadimg('images/Terrain/Resources/Tools/Tool_04.png', 1)
 current_cursor = cursor_arrow
 hover_state = None
 menu = None
@@ -43,6 +44,14 @@ def felling_tree_mission(coords, tree):
             i.targetx = coords[0]
             i.targety = coords[1]
             i.target_obj = tree
+def mining_stone_mission(coords, stone):
+    for i in units:
+        if i.select == True and isinstance(i, player.Pawn):
+            i.mission = 'mining stone'
+            i.targetx = coords[0]
+            i.targety = coords[1]
+            i.target_obj = stone
+
 while True:
     fps.tick(60)
     screen.fill('black')
@@ -118,6 +127,11 @@ while True:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in decorations.stones:
         i.render(screen, mlevel.xcamera, mlevel.ycamera)
+        if i.get_hitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
+            hover_state = 'stone' 
+            current_cursor = cursor_pickaxe
+            if click == True:
+                mining_stone_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
     inventory.render(screen)
     if menu != None:
         menu.render(screen)
