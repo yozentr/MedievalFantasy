@@ -116,6 +116,8 @@ while True:
                 felling_tree_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
     for i in decorations.stumps:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
+    for i in decorations.stones:
+        i.render(screen, mlevel.xcamera, mlevel.ycamera)
     inventory.render(screen)
     if menu != None:
         menu.render(screen)

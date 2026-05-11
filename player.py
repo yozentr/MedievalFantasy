@@ -132,7 +132,7 @@ class Pawn(Warrior):
         if self.mission == 'felling tree' and self.get_distance_to_target()[0] < 10:
             self.state = 'interact_axe'
             if self.anims['interact_axe'].index == 3:
-                self.target_obj.hp -= 10
+                self.target_obj.hp -= 5
                 if self.target_obj.hp < 1:
                     self.mission = None
             if self.targetx > self.hitbox.centerx:
