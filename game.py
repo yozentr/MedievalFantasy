@@ -10,7 +10,27 @@ import inventory
 import rightclick
 
 pygame.init()
+def selectslot_all():
+    print(1)
+    for i in units:
+        i.select = True
+def unselectslot():
+    for i in units:
+        i.select = False
+def selectslot():
+    global secondmenu
+    if secondmenu == None:
+        if menu.x < screen.get_width() / 2:
+            secondmenu = rightclick.Menu(menu.x + 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
+        else:
+            secondmenu = rightclick.Menu(menu.x - 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
+        secondmenu.button[1].slot = selectslot_all
+        secondmenu.button[0].slot = unselectslot
+    else:
+        secondmenu = None
+
 info = pygame.display.Info()
+
 screen = pygame.display.set_mode([info.current_w, info.current_h])
 fps = pygame.time.Clock()
 mlevel = level.Level()
@@ -26,6 +46,7 @@ cursor_pickaxe = utils.loadimg('images/Terrain/Resources/Tools/Tool_04.png', 1)
 current_cursor = cursor_arrow
 hover_state = None
 menu = None
+secondmenu = None
 
 pygame.mouse.set_visible(False)
 
@@ -58,17 +79,25 @@ while True:
     events = pygame.event.get()
     mpos = pygame.mouse.get_pos()
     click = False
-    
+    c = 0
     for i in events:
         if i.type == pygame.KEYDOWN:
             if i.key == pygame.K_ESCAPE:
                 quit()
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
-            menu = None
             lastcamx = mpos[0]
             lastcamy = mpos[1]
             click = True
             moving = True
+            if menu != None:
+                
+                if menu != None and menu.get_hitbox().collidepoint(mpos):
+                    c += 1
+                if secondmenu != None and secondmenu.get_hitbox().collidepoint(mpos):
+                    c += 1
+                if c == 0:
+                    menu = None
+                    secondmenu = None
             if clicknowhere() == True:
                 for j in units:
                     if j.select == True:
@@ -77,9 +106,11 @@ while True:
                         j.mustmove = True
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 3:
             if menu == None:
-                menu = rightclick.Menu(mpos[0], mpos[1], ['House', 'alfredo', 'Castlee'])
+                menu = rightclick.Menu(mpos[0], mpos[1], ['Select', 'Build'])
+                menu.button[0].slot = selectslot
             else:
                 menu = None
+                secondmenu = None
         if i.type == pygame.MOUSEBUTTONUP and i.button == 1:
             moving = False
             click = False
@@ -99,20 +130,27 @@ while True:
     camera_step = 10 / mlevel.scale
     if pressed[pygame.K_a]:
         menu = None
+        secondmenu = None
         mlevel.xcamera -= camera_step
     if pressed[pygame.K_d]:
         menu = None
+        secondmenu = None
         mlevel.xcamera += camera_step
     if pressed[pygame.K_s]:
         menu = None
+        secondmenu = None
         mlevel.ycamera += camera_step
     if pressed[pygame.K_w]:
         menu = None
+        secondmenu = None
         mlevel.ycamera -= camera_step
     mlevel.render(screen)
     for i in units:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
-        i.update(click)
+        if c != 0:
+            i.update(False)
+        else:
+            i.update(click)
         if i.mustmove == True:
             i.moving(mlevel, units)
     hover_state = None
@@ -134,7 +172,9 @@ while True:
                 mining_stone_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
     inventory.render(screen)
     if menu != None:
-        menu.render(screen)
+        menu.render(screen, click)
+    if secondmenu != None:
+        secondmenu.render(screen, click)
     if hover_state == None:
         current_cursor = cursor_arrow
 

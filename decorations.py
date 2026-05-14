@@ -24,7 +24,7 @@ def loadtrees():
         if gid != 0:
             stone = Stone(x * 64, (y) * 64, map.get_tile_image_by_gid(gid))
             stones.append(stone)
-    print(stones)
+
             
 class Tree:
     def __init__(self, x, y):
