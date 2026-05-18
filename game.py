@@ -11,12 +11,14 @@ import rightclick
 
 pygame.init()
 def selectslot_all():
-    print(1)
     for i in units:
         i.select = True
 def unselectslot():
     for i in units:
         i.select = False
+def selectslot_pawn():
+    for i in units:
+        i.select = True
 def selectslot():
     global secondmenu
     if secondmenu == None:
@@ -90,7 +92,6 @@ while True:
             click = True
             moving = True
             if menu != None:
-                
                 if menu != None and menu.get_hitbox().collidepoint(mpos):
                     c += 1
                 if secondmenu != None and secondmenu.get_hitbox().collidepoint(mpos):
@@ -98,7 +99,7 @@ while True:
                 if c == 0:
                     menu = None
                     secondmenu = None
-            if clicknowhere() == True:
+            if clicknowhere() == True and c == 0:
                 for j in units:
                     if j.select == True:
                         j.targetx = pygame.mouse.get_pos()[0] + mlevel.xcamera
