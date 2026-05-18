@@ -127,6 +127,7 @@ class Pawn(Warrior):
         self.anims['run'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Run.png', 1, 6, 6, True)
         self.anims['interact_axe'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Interact Axe.png', 1, 6, 6, True)
         self.anims['hold_wood'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Idle Wood.png', 1, 8, 6, True)
+        self.anims['interact_pickaxe'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Interact Pickaxe.png', 1, 6, 6, True)
         self.mission = None
         self.target_obj = None
     def render(self, screen, xcamera, ycamera, scale=1):
@@ -136,7 +137,19 @@ class Pawn(Warrior):
         if self.mission == 'felling tree' and self.get_distance_to_target()[0] < 10:
             self.state = 'interact_axe'
             if self.anims['interact_axe'].index == 3:
-                self.target_obj.hp -= 10
+                self.target_obj.hp -= 5
+                if self.target_obj.hp < 1:
+                    self.mission = None
+            if self.targetx > self.hitbox.centerx:
+                self.dir = 'r'
+            else:
+                self.dir = 'l'
+        else:
+            pass
+        if self.mission == 'mining stone' and self.get_distance_to_target()[0] < 10:
+            self.state = 'interact_pickaxe'
+            if self.anims['interact_pickaxe'].index == 3:
+                self.target_obj.hp -= 5
                 if self.target_obj.hp < 1:
                     self.mission = None
             if self.targetx > self.hitbox.centerx:
