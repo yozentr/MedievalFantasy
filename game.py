@@ -18,7 +18,12 @@ def unselectslot():
         i.select = False
 def selectslot_pawn():
     for i in units:
-        i.select = True
+        if isinstance(i) == player.Pawn:
+            i.select = True
+def selectslot_warrior():
+    for i in units:
+        if isinstance(i) == player.Warrior:
+            i.select = True
 def selectslot():
     global secondmenu
     if secondmenu == None:
@@ -26,8 +31,10 @@ def selectslot():
             secondmenu = rightclick.Menu(menu.x + 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
         else:
             secondmenu = rightclick.Menu(menu.x - 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
-        secondmenu.button[1].slot = selectslot_all
         secondmenu.button[0].slot = unselectslot
+        secondmenu.button[1].slot = selectslot_all
+        secondmenu.button[2].slot = selectslot_pawn
+        secondmenu.button[3].slot = selectslot_warrior
     else:
         secondmenu = None
 
@@ -40,11 +47,13 @@ lastcamx = mlevel.xcamera
 lastcamy = mlevel.ycamera
 moving = False
 units = []
+enemies = []
 decorations.loadtrees()
 cursor_arrow = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_01.png', 1)
 cursor_axe = utils.loadimg('images/Terrain/Resources/Tools/Tool_02.png', 1)
 cursor_hand = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_02.png', 1)
 cursor_pickaxe = utils.loadimg('images/Terrain/Resources/Tools/Tool_04.png', 1)
+cursor_sword = utils.loadimg('images/Terrain/Resources/Tools/Tool_03.png', 1)
 current_cursor = cursor_arrow
 hover_state = None
 menu = None
@@ -52,8 +61,8 @@ secondmenu = None
 
 pygame.mouse.set_visible(False)
 
-
-mlevel.load(units)
+mlevel.load(units, enemies)
+allunits = units + enemies
 def clicknowhere():
     for i in units:
         hitbox = i.gethitbox()
@@ -74,6 +83,12 @@ def mining_stone_mission(coords, stone):
             i.targetx = coords[0]
             i.targety = coords[1]
             i.target_obj = stone
+def attack_mission(enemy):
+    for i in units:
+        if i.select == True and isinstance(i, player.Warrior):
+            i.mission = 'attack'
+            i.target_obj = enemy
+            
 
 while True:
     fps.tick(60)
@@ -153,7 +168,11 @@ while True:
         else:
             i.update(click)
         if i.mustmove == True:
-            i.moving(mlevel, units)
+            i.moving(mlevel, allunits)
+    for i in enemies:
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
+        i.update()
+        i.moving(mlevel, allunits)
     hover_state = None
     for i in decorations.trees:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
@@ -171,6 +190,12 @@ while True:
             current_cursor = cursor_pickaxe
             if click == True:
                 mining_stone_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
+    for i in enemies:
+        if i.gethitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
+            hover_state = 'attack'
+            current_cursor = cursor_sword
+            if click == True:
+                attack_mission(i)
     inventory.render(screen)
     if menu != None:
         menu.render(screen, click)

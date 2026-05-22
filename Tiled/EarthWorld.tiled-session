@@ -17,6 +17,11 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "EnemyWarrior_Idle.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "House1.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
@@ -83,14 +88,14 @@
         },
         "World.tmx": {
             "expandedGroupLayers": [
-                17,
-                14
+                14,
+                17
             ],
             "scale": 1,
-            "selectedLayer": 7,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 3890,
-                "y": 3921
+                "x": 4096,
+                "y": 3646
             }
         },
         "World.tmx#Decorations": {
@@ -103,7 +108,7 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Decorations/Rocks",
+    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Units/Red Units/Warrior",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "World.tmx",
@@ -115,10 +120,12 @@
         "Pawn_Idle.tsx",
         "Buildings.tsx",
         "Tree3.tsx",
-        "Stone.tsx"
+        "Stone.tsx",
+        "EnemyWarrior_Idle.tsx"
     ],
     "project": "EarthWorld.tiled-project",
     "recentFiles": [
+        "EnemyWarrior_Idle.tsx",
         "Stone.tsx",
         "Tree3.tsx",
         "Buildings.tsx",
@@ -129,14 +136,13 @@
         "Tilemap_color3.tsx",
         "Tilemap_color2.tsx",
         "World.tmx",
-        "House1.tsx",
-        "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Terrain/Tileset/Monastery.tsx"
+        "House1.tsx"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 64,
-        "width": 64
+        "height": 192,
+        "width": 192
     },
-    "tileset.type": 1
+    "tileset.type": 0
 }
