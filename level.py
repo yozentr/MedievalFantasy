@@ -2,6 +2,7 @@ import utils
 import pygame
 import pytmx
 import player
+import enemies as enemyunits
 import math
 
 
@@ -91,7 +92,7 @@ class Level:
         self.ycamera = anchor_world_y - anchor_pos[1] / self.scale
         return True
 
-    def load(self, warriors):
+    def load(self, warriors, enemies):
         #print(1)
         data = pytmx.load_pygame('Tiled/World.tmx')
         #print(2)
@@ -103,3 +104,7 @@ class Level:
             if gid != 0:
                 pawn = player.Pawn(x * 64, (y - 2) * 64)
                 warriors.append(pawn)
+        for x, y, gid in data.get_layer_by_name('EnemyWarrior'):
+            if gid != 0:
+                enemywarrior = enemyunits.EnemyWarrior(x * 64, (y - 2) * 64)
+                enemies.append(enemywarrior)

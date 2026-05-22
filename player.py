@@ -1,6 +1,7 @@
 import animation
 import pygame
 import utils
+import bar
 
 class Warrior:
     def __init__(self, x, y):
@@ -12,10 +13,13 @@ class Warrior:
         self.targetx = 100
         self.targety = 100
         self.mustmove = False
+        self.hp = 200
+        self.bar = bar.Bar(200)
         self.dir = 'r'
+        self.mission = None
         self.selectimg = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_04.png', 1)
         self.anims:dict[str, animation.Animation] = {}
-        self.anims['attack1'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Attack1.png', 1, 4, 6, True)
+        self.anims['attack'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Attack1.png', 1, 4, 12, True)
         self.anims['idle'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Idle.png', 1, 8, 6, True)
         self.anims['run'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Run.png', 1, 6, 6, True)
     def render(self, screen, xcamera, ycamera, scale=1):
@@ -29,6 +33,9 @@ class Warrior:
         pygame.draw.rect(screen, 'red', [whit.x - xcamera * scale, whit.y - ycamera * scale, whit.width, whit.height], 2)
         if self.select == True:
             screen.blit(self.selectimg, [self.hitbox.centerx - self.selectimg.get_width() / 2, self.hitbox.centery - self.selectimg.get_height() / 2])
+        self.bar.val = self.hp
+        if self.hp != self.bar.maxval:
+                self.bar.render(screen, self.x, self.y, xcamera, ycamera)
     def update(self, click):
         self.anims[self.state].update()
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
@@ -41,6 +48,21 @@ class Warrior:
             self.state = 'run'
         else:
             self.state = 'idle'
+        
+        if self.mission == 'attack' and self.get_distance_to_target()[0] < 10:
+            self.state = 'attack'
+            if self.anims['attack'].index == 3:
+                self.target_obj.hp -= 3
+                if self.target_obj.hp < 1:
+                    self.mission = None
+            if self.targetx > self.hitbox.centerx:
+                self.dir = 'r'
+            else:
+                self.dir = 'l'
+        elif self.mission == 'attack':
+            self.targetx = self.target_obj.x
+            self.targety = self.target_obj.y
+            
     def moving(self, mlevel, units):
         distance, dx, dy, size = self.get_distance_to_target()
         if abs(distance) < 1:
@@ -130,6 +152,8 @@ class Pawn(Warrior):
         self.anims['interact_pickaxe'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Interact Pickaxe.png', 1, 6, 6, True)
         self.mission = None
         self.target_obj = None
+        self.hp = 100
+        self.bar = bar.Bar(100)
     def render(self, screen, xcamera, ycamera, scale=1):
         return super().render(screen, xcamera, ycamera, scale)
     def update(self, click):
