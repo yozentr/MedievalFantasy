@@ -1,5 +1,25 @@
 import pygame
 
+def world_to_screen(x, y, xcamera, ycamera, scale=1):
+    return (x - xcamera) * scale, (y - ycamera) * scale
+
+def world_rect_to_screen(rect, xcamera, ycamera, scale=1):
+    x, y = world_to_screen(rect.x, rect.y, xcamera, ycamera, scale)
+    return pygame.Rect(
+        round(x),
+        round(y),
+        max(1, round(rect.width * scale)),
+        max(1, round(rect.height * scale)),
+    )
+
+def scale_image(image, scale):
+    if scale == 1:
+        return image
+    return pygame.transform.scale(image, [
+        max(1, round(image.get_width() * scale)),
+        max(1, round(image.get_height() * scale)),
+    ])
+
 def loadimg(path, scale):
     img = pygame.image.load(path)
     img = pygame.transform.scale(img, [img.get_width() * scale, img.get_height() * scale])
