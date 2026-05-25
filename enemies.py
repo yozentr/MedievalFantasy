@@ -2,6 +2,7 @@ import pygame
 import animation
 import utils
 import bar
+import particle
 
 class EnemyWarrior:
     def __init__(self, x, y):
@@ -30,8 +31,13 @@ class EnemyWarrior:
                 self.bar.render(screen, self.x, self.y, xcamera, ycamera)
         if self.hp < 1:
             pass
-    def update(self):
+    def update(self, units, mlevel, enemies):
         self.anims[self.state].update()
+        self.search_for_aim(units, mlevel)
+        if self.hp < 1:
+            dust = particle.Dust(self.x, self.y, mlevel.xcamera, mlevel.ycamera)
+            particle.particles.append(dust)
+            enemies.remove(self)
     def gethitbox(self):
         return pygame.rect.Rect([self.x, self.y], self.anims[self.state].what_size_of_img()).inflate(-140, -140)
     def collision_units(self, units, mlevel):
@@ -80,3 +86,43 @@ class EnemyWarrior:
                 if dir == 'd':
                     self.hitbox.bottom = hit.top
         self.y = self.hitbox.y - 70
+    def search_for_aim(self, units, mlevel):
+        nearest = None
+        mindist = None
+        for i in units:
+            dist = self.get_distance_to_target(i)
+            if nearest == None:
+                nearest = i
+                mindist = dist
+            if dist < mindist:
+                nearest = i
+                mindist = dist
+        if mindist < 500 and mindist > 100:
+            self.state = 'run'
+            if nearest.x > self.x:
+                self.x += 1
+                self.dir = 'r'
+                self.collisionx(mlevel, self.dir)
+            if nearest.x < self.x:
+                self.x -= 1
+                self.dir = 'l' 
+                self.collisionx(mlevel, self.dir)
+            if nearest.y > self.y:
+                self.y += 1
+                self.collisiony(mlevel, self.dir)
+            else:
+                self.y -= 1
+                self.collisiony(mlevel, self.dir)
+        else:
+            self.state = 'idle'
+            if mindist < 100:
+                self.state = 'attack1'
+    def get_distance_to_target(self, target):
+        size = self.anims[self.state].what_size_of_img()
+        x = self.x
+        y = self.y
+        dx = target.x - x
+        dy = target.y - y
+        return (dx * dx + dy * dy)**.5
+
+        

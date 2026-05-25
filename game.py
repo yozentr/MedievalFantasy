@@ -8,6 +8,7 @@ import player
 import random
 import inventory
 import rightclick
+import particle
 
 pygame.init()
 def selectslot_all():
@@ -18,11 +19,11 @@ def unselectslot():
         i.select = False
 def selectslot_pawn():
     for i in units:
-        if isinstance(i) == player.Pawn:
+        if isinstance(i, player.Pawn):
             i.select = True
 def selectslot_warrior():
     for i in units:
-        if isinstance(i) == player.Warrior:
+        if isinstance(i, player.Warrior) and not isinstance(i, player.Pawn):
             i.select = True
 def selectslot():
     global secondmenu
@@ -33,8 +34,9 @@ def selectslot():
             secondmenu = rightclick.Menu(menu.x - 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
         secondmenu.button[0].slot = unselectslot
         secondmenu.button[1].slot = selectslot_all
-        secondmenu.button[2].slot = selectslot_pawn
-        secondmenu.button[3].slot = selectslot_warrior
+        secondmenu.button[2].slot = selectslot_warrior
+        secondmenu.button[3].slot = selectslot_pawn
+    
     else:
         secondmenu = None
 
@@ -173,7 +175,7 @@ while True:
             i.moving(mlevel, allunits)
     for i in enemies:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
-        i.update()
+        i.update(units, mlevel, enemies)
         i.moving(mlevel, allunits)
     hover_state = None
     world_mpos = mlevel.screen_to_world(*mpos)
@@ -199,6 +201,9 @@ while True:
             current_cursor = cursor_sword
             if click == True:
                 attack_mission(i)
+    for i in particle.particles:
+        i.render(screen)
+
     inventory.render(screen)
     if menu != None:
         menu.render(screen, click)
