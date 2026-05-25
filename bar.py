@@ -17,6 +17,12 @@ class Bar:
         self.image.blit(smallbar[0], [0, 0])
         self.image.blit(smallbar[2], [64, 0])
         self.image.blit(smallbar[4], [128, 0])
-    def render(self, screen, x, y, xcamera, ycamera):
-        screen.blit(self.image, [x - xcamera, y - ycamera])
-        pygame.draw.rect(screen, [255, 0, 0], [x - xcamera + 55, y - ycamera + 27, self.val / self.maxval * 80, 10])
+    def render(self, screen, x, y, xcamera, ycamera, scale=1):
+        screen_x, screen_y = utils.world_to_screen(x, y, xcamera, ycamera, scale)
+        screen.blit(utils.scale_image(self.image, scale), [round(screen_x), round(screen_y)])
+        pygame.draw.rect(screen, [255, 0, 0], [
+            round(screen_x + 55 * scale),
+            round(screen_y + 27 * scale),
+            round(self.val / self.maxval * 80 * scale),
+            max(1, round(10 * scale)),
+        ])

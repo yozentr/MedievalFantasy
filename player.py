@@ -23,14 +23,13 @@ class Warrior:
         self.anims['idle'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Idle.png', 1, 8, 6, True)
         self.anims['run'] = animation.Animation('images/Units/Blue Units/Warrior/Warrior_Run.png', 1, 6, 6, True)
     def render(self, screen, xcamera, ycamera, scale=1):
-        screen_x = (self.x - xcamera) * scale
-        screen_y = (self.y - ycamera) * scale
+        screen_x, screen_y = utils.world_to_screen(self.x, self.y, xcamera, ycamera, scale)
         self.hitbox:pygame.Rect = self.anims[self.state].render(screen, screen_x, screen_y, self.dir, scale)
         hitbox_shrink = round(90 * scale)
         self.hitbox = self.hitbox.inflate(-hitbox_shrink, -hitbox_shrink)
         whit = self.gethitbox()
         #whit = whit.inflate(-95, -95)
-        pygame.draw.rect(screen, 'red', [whit.x - xcamera * scale, whit.y - ycamera * scale, whit.width, whit.height], 2)
+        pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(whit, xcamera, ycamera, scale), 2)
         if self.select == True:
             screen.blit(self.selectimg, [self.hitbox.centerx - self.selectimg.get_width() / 2, self.hitbox.centery - self.selectimg.get_height() / 2])
         self.bar.val = self.hp
@@ -120,23 +119,28 @@ class Warrior:
         hitboxunit = self.gethitbox()
         for i in units:
             if i != self:
-                if hitboxunit.colliderect(i.gethitbox()):
-                    #self.mustmove = False
-                    dx = self.x - i.x
-                    dy = self.y - i.y
-                    distance = (dx * dx + dy * dy)**.5
-                    if abs(distance) < 1:
-                        return
-                    self.x += dx / distance * 5
-                    self.y += dy / distance * 5
-                    if dx > 0:
-                        self.collisionx(mlevel, 'r')
+                other_hitbox = i.gethitbox()
+                if hitboxunit.colliderect(other_hitbox):
+                    overlap = hitboxunit.clip(other_hitbox)
+                    if overlap.width <= 0 or overlap.height <= 0:
+                        continue
+
+                    if overlap.width < overlap.height:
+                        if hitboxunit.centerx < other_hitbox.centerx:
+                            self.x -= overlap.width
+                            self.collisionx(mlevel, 'l')
+                        else:
+                            self.x += overlap.width
+                            self.collisionx(mlevel, 'r')
                     else:
-                        self.collisionx(mlevel, 'l')
-                    if dy > 0:
-                        self.collisiony(mlevel, 'd')
-                    else:
-                        self.collisiony(mlevel, 'u')
+                        if hitboxunit.centery < other_hitbox.centery:
+                            self.y -= overlap.height
+                            self.collisiony(mlevel, 'u')
+                        else:
+                            self.y += overlap.height
+                            self.collisiony(mlevel, 'd')
+
+                    hitboxunit = self.gethitbox()
 class Pawn(Warrior):
     def __init__(self, x, y):
         super().__init__(x, y)
@@ -159,7 +163,7 @@ class Pawn(Warrior):
                 self.target_obj.hp -= 5
                 if self.target_obj.hp < 1:
                     self.mission = None
-            if self.targetx > self.hitbox.centerx:
+            if self.targetx > self.gethitbox().centerx:
                 self.dir = 'r'
             else:
                 self.dir = 'l'
@@ -171,10 +175,9 @@ class Pawn(Warrior):
                 self.target_obj.hp -= 5
                 if self.target_obj.hp < 1:
                     self.mission = None
-            if self.targetx > self.hitbox.centerx:
+            if self.targetx > self.gethitbox().centerx:
                 self.dir = 'r'
             else:
                 self.dir = 'l'
         else:
             pass
-

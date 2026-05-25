@@ -35,19 +35,19 @@ class Tree:
         self.dead = False
         self.anim = animation.Animation('images/Terrain/Resources/Wood/Trees/Tree3.png', 1, 8, 12, True)
     def render(self, screen, xcamera, ycamera, scale):
-        #screen.blit(imgtrees[0], ((self.x - xcamera) * scale, (self.y - ycamera) * scale))
         self.bar.val = self.hp
+        screen_x, screen_y = utils.world_to_screen(self.x, self.y, xcamera, ycamera, scale)
         if self.hp > 0:
-            self.anim.render(screen, self.x - xcamera, self.y - ycamera, 'r', 1)
+            self.anim.render(screen, screen_x, screen_y, 'r', scale)
             self.anim.update()
             if self.hp != self.bar.maxval:
-                self.bar.render(screen, self.x, self.y, xcamera, ycamera)
+                self.bar.render(screen, self.x, self.y, xcamera, ycamera, scale)
             
         else:
-            screen.blit(imgstump, [self.x - xcamera, self.y - ycamera - 60])
+            screen.blit(utils.scale_image(imgstump, scale), [round(screen_x), round(screen_y - 60 * scale)])
             if self.dead == False:
                 for i in range(random.randint(1, 3)):
-                    stumps.append(Stump(self.x - xcamera, self.y - ycamera))
+                    stumps.append(Stump(screen_x, screen_y))
                 self.dead = True
             
     def get_hitbox(self):
@@ -74,16 +74,17 @@ class Stone:
         self.img = img
         self.hp = 100
         self.bar = bar.Bar(100)
-    def render(self, screen, xcamera, ycamera):
+    def render(self, screen, xcamera, ycamera, scale=1):
         self.bar.val = self.hp
-        screen.blit(self.img, (self.x - xcamera, self.y - ycamera))
-        pygame.draw.rect(screen, 'red', self.get_hitbox().move(-xcamera, -ycamera), 2)
+        screen_x, screen_y = utils.world_to_screen(self.x, self.y, xcamera, ycamera, scale)
+        screen.blit(utils.scale_image(self.img, scale), (round(screen_x), round(screen_y)))
+        pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(self.get_hitbox(), xcamera, ycamera, scale), 2)
         if self.hp != self.bar.maxval:
-            self.bar.render(screen, self.x, self.y, xcamera, ycamera)
+            self.bar.render(screen, self.x, self.y, xcamera, ycamera, scale)
             if self.hp < 1:
                 stones.remove(self)
                 for i in range(1):
-                    stumps.append(StoneResource(self.x - xcamera, self.y - ycamera))
+                    stumps.append(StoneResource(screen_x, screen_y))
     def get_hitbox(self):
         return pygame.rect.Rect([self.x, self.y], self.img.get_size())
 class StoneResource:

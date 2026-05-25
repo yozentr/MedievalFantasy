@@ -66,9 +66,10 @@ pygame.mouse.set_visible(False)
 mlevel.load(units, enemies)
 allunits = units + enemies
 def clicknowhere():
+    world_mpos = mlevel.screen_to_world(*mpos)
     for i in units:
         hitbox = i.gethitbox()
-        if hitbox.collidepoint(mpos[0] + mlevel.xcamera, mpos[1] + mlevel.ycamera):
+        if hitbox.collidepoint(world_mpos):
             return False
     return True
 def felling_tree_mission(coords, tree):
@@ -117,10 +118,11 @@ while True:
                     menu = None
                     secondmenu = None
             if clicknowhere() == True and c == 0:
+                targetx, targety = mlevel.screen_to_world(*mpos)
                 for j in units:
                     if j.select == True:
-                        j.targetx = pygame.mouse.get_pos()[0] + mlevel.xcamera
-                        j.targety = pygame.mouse.get_pos()[1] + mlevel.ycamera
+                        j.targetx = targetx
+                        j.targety = targety
                         j.mustmove = True
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 3:
             if menu == None:
@@ -176,9 +178,10 @@ while True:
         i.update(units, mlevel, enemies)
         i.moving(mlevel, allunits)
     hover_state = None
+    world_mpos = mlevel.screen_to_world(*mpos)
     for i in decorations.trees:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
-        if i.get_hitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos) and i.dead == False:
+        if i.get_hitbox().collidepoint(world_mpos) and i.dead == False:
             hover_state = 'tree'
             current_cursor = cursor_axe
             if click == True:
@@ -186,8 +189,8 @@ while True:
     for i in decorations.stumps:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in decorations.stones:
-        i.render(screen, mlevel.xcamera, mlevel.ycamera)
-        if i.get_hitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
+        if i.get_hitbox().collidepoint(world_mpos):
             hover_state = 'stone' 
             current_cursor = cursor_pickaxe
             if click == True:

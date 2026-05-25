@@ -25,8 +25,8 @@ class Level:
         self.borders = {}
         for i in map.get_layer_by_name('Borders'):
             if i[2] != 0:
-                x = i[0] * 64 * self.scale
-                y = i[1] * 64 * self.scale
+                x = i[0] * 64
+                y = i[1] * 64
                 self.borders[(x, y)] = None
 
 
@@ -49,7 +49,8 @@ class Level:
         if self.scale == 1:
             screen.blit(visible_part, [offset_x, offset_y])
             for i in self.borders:
-                pygame.draw.rect(screen, 'red', (i[0] - self.xcamera * self.scale, i[1] - self.ycamera * self.scale, 64 * self.scale, 64 * self.scale))
+                border_rect = pygame.Rect(i[0], i[1], 64, 64)
+                pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(border_rect, self.xcamera, self.ycamera, self.scale))
             return
             
 
