@@ -8,6 +8,9 @@
         "": {
             "scaleInDock": 1
         },
+        "Archer_Idle.tsx": {
+            "dynamicWrapping": false
+        },
         "Buildings.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 0.33,
@@ -92,10 +95,10 @@
                 17
             ],
             "scale": 1,
-            "selectedLayer": 6,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 4096,
-                "y": 3646
+                "x": 4040,
+                "y": 3847
             }
         },
         "World.tmx#Decorations": {
@@ -108,7 +111,7 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Units/Red Units/Warrior",
+    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Units/Blue Units/Archer",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "World.tmx",

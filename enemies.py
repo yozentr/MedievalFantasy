@@ -34,6 +34,8 @@ class EnemyWarrior:
     def update(self, units, mlevel, enemies):
         self.anims[self.state].update()
         self.search_for_aim(units, mlevel)
+        if self.anims['attack1'].index == 3:
+                self.target_obj.hp -= 3
         if self.hp < 1:
             dust = particle.Dust(self.x, self.y, mlevel.xcamera, mlevel.ycamera)
             particle.particles.append(dust)
@@ -115,6 +117,7 @@ class EnemyWarrior:
                 self.collisiony(mlevel, self.dir)
         else:
             self.state = 'idle'
+            self.target_obj = nearest
             if mindist < 100:
                 self.state = 'attack1'
     def get_distance_to_target(self, target):

@@ -30,8 +30,8 @@ class Tree:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.hp = 100
-        self.bar = bar.Bar(100)
+        self.hp = 3000
+        self.bar = bar.Bar(3000)
         self.dead = False
         self.anim = animation.Animation('images/Terrain/Resources/Wood/Trees/Tree3.png', 1, 8, 12, True)
     def render(self, screen, xcamera, ycamera, scale):
@@ -72,8 +72,8 @@ class Stone:
         self.x = x
         self.y = y
         self.img = img
-        self.hp = 100
-        self.bar = bar.Bar(100)
+        self.hp = 4000
+        self.bar = bar.Bar(4000)
     def render(self, screen, xcamera, ycamera, scale=1):
         self.bar.val = self.hp
         screen_x, screen_y = utils.world_to_screen(self.x, self.y, xcamera, ycamera, scale)

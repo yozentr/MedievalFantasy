@@ -168,9 +168,9 @@ while True:
     for i in units:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         if c != 0:
-            i.update(False)
+            i.update(False, units, mlevel)
         else:
-            i.update(click)
+            i.update(click, units, mlevel)
         if i.mustmove == True:
             i.moving(mlevel, allunits)
     for i in enemies:
@@ -185,7 +185,7 @@ while True:
             hover_state = 'tree'
             current_cursor = cursor_axe
             if click == True:
-                felling_tree_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
+                felling_tree_mission(i.get_hitbox().midbottom, i)
     for i in decorations.stumps:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in decorations.stones:
@@ -194,7 +194,7 @@ while True:
             hover_state = 'stone' 
             current_cursor = cursor_pickaxe
             if click == True:
-                mining_stone_mission(i.get_hitbox().move(random.choice([-50, 50]), -40).midbottom, i)
+                mining_stone_mission(i.get_hitbox().midbottom, i)
     for i in enemies:
         if i.gethitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
             hover_state = 'attack'
@@ -203,7 +203,6 @@ while True:
                 attack_mission(i)
     for i in particle.particles:
         i.render(screen)
-
     inventory.render(screen)
     if menu != None:
         menu.render(screen, click)

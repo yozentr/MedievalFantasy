@@ -105,6 +105,12 @@ class Level:
             if gid != 0:
                 pawn = player.Pawn(x * 64, (y - 2) * 64)
                 warriors.append(pawn)
+        for x, y, gid in data.get_layer_by_name('Archer'):
+            if gid != 0:
+                archer = player.Archer(x * 64, (y - 2) * 64)
+                warriors.append(archer)
+
+        
         for x, y, gid in data.get_layer_by_name('EnemyWarrior'):
             if gid != 0:
                 enemywarrior = enemyunits.EnemyWarrior(x * 64, (y - 2) * 64)
