@@ -148,6 +148,8 @@ class Warrior:
 
                     hitboxunit = self.gethitbox()
 class Pawn(Warrior):
+    RESOURCE_INTERACTION_DISTANCE = 12
+
     def __init__(self, x, y):
         super().__init__(x, y)
         self.anims['idle'] = animation.Animation('images/Units/Blue Units/Pawn/Pawn_Idle.png', 1, 8, 6, True)
@@ -163,30 +165,47 @@ class Pawn(Warrior):
         return super().render(screen, xcamera, ycamera, scale)
     def update(self, click, units, mlevel):
         super().update(click, units, mlevel)
-        if self.mission == 'felling tree' and self.get_distance_to_target()[0] < 100:
-            self.state = 'interact_axe'
-            if self.anims['interact_axe'].index == 3:
-                self.target_obj.hp -= 5
-                if self.target_obj.hp < 1:
-                    self.mission = None
-            if self.targetx > self.gethitbox().centerx:
-                self.dir = 'r'
-            else:
-                self.dir = 'l'
+        self.interact_with_resource('felling tree', 'interact_axe')
+        self.interact_with_resource('mining stone', 'interact_pickaxe')
+
+    def interact_with_resource(self, mission, anim_name):
+        if self.mission != mission:
+            return
+        if self.target_obj is None or self.target_obj.hp < 1:
+            self.mission = None
+            self.mustmove = False
+            return
+        target_hitbox = self.get_target_interaction_hitbox()
+        if target_hitbox is None:
+            return
+        if self.distance_to_rect(target_hitbox) > self.RESOURCE_INTERACTION_DISTANCE:
+            return
+
+        self.mustmove = False
+        self.state = anim_name
+        if self.anims[anim_name].index == 3:
+            self.target_obj.hp -= 5
+            if self.target_obj.hp < 1:
+                self.mission = None
+        if target_hitbox.centerx > self.gethitbox().centerx:
+            self.dir = 'r'
         else:
-            pass
-        if self.mission == 'mining stone' and self.get_distance_to_target()[0] < 100:
-            self.state = 'interact_pickaxe'
-            if self.anims['interact_pickaxe'].index == 3:
-                self.target_obj.hp -= 5
-                if self.target_obj.hp < 1:
-                    self.mission = None
-            if self.targetx > self.gethitbox().centerx:
-                self.dir = 'r'
-            else:
-                self.dir = 'l'
-        else:
-            pass
+            self.dir = 'l'
+
+    def get_target_interaction_hitbox(self):
+        if self.target_obj is None:
+            return None
+        if hasattr(self.target_obj, 'get_interaction_hitbox'):
+            return self.target_obj.get_interaction_hitbox()
+        if hasattr(self.target_obj, 'get_hitbox'):
+            return self.target_obj.get_hitbox()
+        return None
+
+    def distance_to_rect(self, rect):
+        hitbox = self.gethitbox()
+        dx = max(rect.left - hitbox.right, hitbox.left - rect.right, 0)
+        dy = max(rect.top - hitbox.bottom, hitbox.top - rect.bottom, 0)
+        return (dx * dx + dy * dy)**.5
 class Archer(Warrior):
     def __init__(self, x, y):
         super().__init__(x, y)

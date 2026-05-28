@@ -22,7 +22,7 @@ class Arrow:
         self.y = y
         self.vx = (targetx - x) / 100
         self.vx = (targety - y) / 100
-        self.anim = animation.Animation("images\Units\Blue Units\Archer\Arrow.png", 2, 1, 12, False)
+        self.anim = animation.Animation("images/Units/Blue Units/Archer/Arrow.png", 2, 1, 12, False)
     def render(self, screen):
         self.anim.render(screen, self.x, self.y, 'r', 1)
         self.timer -= 1

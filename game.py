@@ -72,6 +72,12 @@ def clicknowhere():
         if hitbox.collidepoint(world_mpos):
             return False
     return True
+
+def get_interaction_target(obj):
+    if hasattr(obj, 'get_interaction_hitbox'):
+        return obj.get_interaction_hitbox().center
+    return obj.get_hitbox().center
+
 def felling_tree_mission(coords, tree):
     for i in units:
         if i.select == True and isinstance(i, player.Pawn):
@@ -79,6 +85,7 @@ def felling_tree_mission(coords, tree):
             i.targetx = coords[0]
             i.targety = coords[1]
             i.target_obj = tree
+            i.mustmove = True
 def mining_stone_mission(coords, stone):
     for i in units:
         if i.select == True and isinstance(i, player.Pawn):
@@ -86,6 +93,7 @@ def mining_stone_mission(coords, stone):
             i.targetx = coords[0]
             i.targety = coords[1]
             i.target_obj = stone
+            i.mustmove = True
 def attack_mission(enemy):
     for i in units:
         if i.select == True and isinstance(i, player.Warrior):
@@ -185,7 +193,7 @@ while True:
             hover_state = 'tree'
             current_cursor = cursor_axe
             if click == True:
-                felling_tree_mission(i.get_hitbox().midbottom, i)
+                felling_tree_mission(get_interaction_target(i), i)
     for i in decorations.stumps:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in decorations.stones:
@@ -194,7 +202,7 @@ while True:
             hover_state = 'stone' 
             current_cursor = cursor_pickaxe
             if click == True:
-                mining_stone_mission(i.get_hitbox().midbottom, i)
+                mining_stone_mission(get_interaction_target(i), i)
     for i in enemies:
         if i.gethitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
             hover_state = 'attack'
