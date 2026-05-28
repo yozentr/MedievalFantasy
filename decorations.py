@@ -52,6 +52,12 @@ class Tree:
             
     def get_hitbox(self):
         return pygame.rect.Rect([self.x, self.y], imgtrees[0].get_size())
+
+    def get_interaction_hitbox(self):
+        hitbox = self.get_hitbox()
+        width = max(1, hitbox.width // 3)
+        height = max(1, hitbox.height // 3)
+        return pygame.Rect(hitbox.centerx - width // 2, hitbox.bottom - height, width, height)
     
 class Stump:
     def __init__(self, x, y):
@@ -87,6 +93,9 @@ class Stone:
                     stumps.append(StoneResource(screen_x, screen_y))
     def get_hitbox(self):
         return pygame.rect.Rect([self.x, self.y], self.img.get_size())
+
+    def get_interaction_hitbox(self):
+        return self.get_hitbox()
 class StoneResource:
     def __init__(self, x, y):
         self.x = x + random.randint(-80, 80)
