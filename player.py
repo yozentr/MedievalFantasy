@@ -14,6 +14,7 @@ class Warrior:
         self.targetx = 100
         self.targety = 100
         self.mustmove = False
+        self.damage = 3
         self.hp = 200
         self.bar = bar.Bar(200)
         self.dir = 'r'
@@ -49,15 +50,19 @@ class Warrior:
             self.state = 'run'
         else:
             self.state = 'idle'
-        
-        if self.mission == 'attack' and self.get_distance_to_target()[0] < self.attackdistance:
+        if self.mission == 'attack' and self.needstop():
             self.state = 'attack'
             self.mustmove = False
+           
             if self.anims['attack'].index == 3:
-                self.target_obj.hp -= 3
+                self.target_obj.hp -= self.damage
                 if self.target_obj.hp < 1:
                     self.mission = None
             if self.targetx > self.hitbox.centerx:
+                self.dir = 'r'
+            else:
+                self.dir = 'l'
+            if self.gethitbox().centerx < self.target_obj.gethitbox().centerx:
                 self.dir = 'r'
             else:
                 self.dir = 'l'
@@ -96,6 +101,11 @@ class Warrior:
         dx = self.targetx - x
         dy = self.targety - y
         return (dx * dx + dy * dy)**.5, dx, dy, size
+    def needstop(self):
+        if self.gethitbox().inflate(self.attackdistance, self.attackdistance).colliderect(self.target_obj.gethitbox()):
+            return True
+        else:
+            return False
     def gethitbox(self):
         return pygame.rect.Rect([self.x, self.y], self.anims[self.state].what_size_of_img()).inflate(-140, -140)
     def collisionx(self, mlevel, dir):
@@ -167,7 +177,6 @@ class Pawn(Warrior):
         super().update(click, units, mlevel)
         self.interact_with_resource('felling tree', 'interact_axe')
         self.interact_with_resource('mining stone', 'interact_pickaxe')
-
     def interact_with_resource(self, mission, anim_name):
         if self.mission != mission:
             return
@@ -212,6 +221,7 @@ class Archer(Warrior):
         self.anims['attack'] = animation.Animation('images/Units/Blue Units/Archer/Archer_Shoot.png', 1, 8, 4, True)
         self.anims['idle'] = animation.Animation('images/Units/Blue Units/Archer/Archer_Idle.png', 1, 6, 6, True)
         self.anims['run'] = animation.Animation('images/Units/Blue Units/Archer/Archer_Run.png', 1, 4, 6, True)
-        self.attackdistance = 1000
+        self.attackdistance = 450
         self.hp = 150
         self.bar = bar.Bar(150)
+        self.damage = 5

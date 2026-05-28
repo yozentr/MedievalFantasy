@@ -14,7 +14,7 @@ class EnemyWarrior:
         self.hp = 200
         self.bar = bar.Bar(200)
         self.anims:dict[str, animation.Animation] = {}
-        self.anims['attack1'] = animation.Animation('images/Units/Red Units/Warrior/Warrior_Attack1.png', 1, 4, 10, True)
+        self.anims['attack1'] = animation.Animation('images/Units/Red Units/Warrior/Warrior_Attack1.png', 1, 4, 12, True)
         self.anims['idle'] = animation.Animation('images/Units/Red Units/Warrior/Warrior_Idle.png', 1, 8, 6, True)
         self.anims['run'] = animation.Animation('images/Units/Red Units/Warrior/Warrior_Run.png', 1, 6, 6, True)
     def render(self, screen, xcamera, ycamera, scale):
@@ -29,13 +29,16 @@ class EnemyWarrior:
         self.bar.val = self.hp
         if self.hp != self.bar.maxval:
                 self.bar.render(screen, self.x, self.y, xcamera, ycamera)
-        if self.hp < 1:
-            pass
+
     def update(self, units, mlevel, enemies):
         self.anims[self.state].update()
         self.search_for_aim(units, mlevel)
-        if self.anims['attack1'].index == 3:
+        if self.anims['attack1'].index == 3 and self.target_obj != None:
                 self.target_obj.hp -= 3
+                if self.target_obj.hp < 1:
+                    self.target_obj = None
+                    self.nearest = None
+                    self.state = 'idle'
         if self.hp < 1:
             dust = particle.Dust(self.x, self.y, mlevel.xcamera, mlevel.ycamera)
             particle.particles.append(dust)
@@ -99,6 +102,8 @@ class EnemyWarrior:
             if dist < mindist:
                 nearest = i
                 mindist = dist
+        if mindist == None or mindist > 500:
+            return
         if mindist < 500 and mindist > 100:
             self.state = 'run'
             if nearest.x > self.x:

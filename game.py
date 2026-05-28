@@ -23,19 +23,24 @@ def selectslot_pawn():
             i.select = True
 def selectslot_warrior():
     for i in units:
-        if isinstance(i, player.Warrior) and not isinstance(i, player.Pawn):
+        if isinstance(i, player.Warrior) and not isinstance(i, player.Pawn) and not isinstance(i, player.Archer):
+            i.select = True
+def selectslot_archer():
+    for i in units:
+        if isinstance(i, player.Archer):
             i.select = True
 def selectslot():
     global secondmenu
     if secondmenu == None:
         if menu.x < screen.get_width() / 2:
-            secondmenu = rightclick.Menu(menu.x + 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
+            secondmenu = rightclick.Menu(menu.x + 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns', 'Archers'])
         else:
-            secondmenu = rightclick.Menu(menu.x - 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns'])
+            secondmenu = rightclick.Menu(menu.x - 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns', 'Archers'])
         secondmenu.button[0].slot = unselectslot
         secondmenu.button[1].slot = selectslot_all
         secondmenu.button[2].slot = selectslot_warrior
         secondmenu.button[3].slot = selectslot_pawn
+        secondmenu.button[4].slot = selectslot_archer
     
     else:
         secondmenu = None
@@ -64,7 +69,6 @@ secondmenu = None
 pygame.mouse.set_visible(False)
 
 mlevel.load(units, enemies)
-allunits = units + enemies
 def clicknowhere():
     world_mpos = mlevel.screen_to_world(*mpos)
     for i in units:
@@ -132,6 +136,7 @@ while True:
                         j.targetx = targetx
                         j.targety = targety
                         j.mustmove = True
+                        j.mission = None
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 3:
             if menu == None:
                 menu = rightclick.Menu(mpos[0], mpos[1], ['Select', 'Build'])
@@ -180,11 +185,11 @@ while True:
         else:
             i.update(click, units, mlevel)
         if i.mustmove == True:
-            i.moving(mlevel, allunits)
+            i.moving(mlevel, units + enemies)
     for i in enemies:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         i.update(units, mlevel, enemies)
-        i.moving(mlevel, allunits)
+        i.moving(mlevel, units + enemies)
     hover_state = None
     world_mpos = mlevel.screen_to_world(*mpos)
     for i in decorations.trees:

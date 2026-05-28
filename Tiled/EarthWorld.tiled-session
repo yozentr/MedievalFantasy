@@ -9,7 +9,8 @@
             "scaleInDock": 1
         },
         "Archer_Idle.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1
         },
         "Buildings.tsx": {
             "dynamicWrapping": true,
@@ -91,8 +92,8 @@
         },
         "World.tmx": {
             "expandedGroupLayers": [
-                14,
-                17
+                17,
+                14
             ],
             "scale": 1,
             "selectedLayer": 8,
