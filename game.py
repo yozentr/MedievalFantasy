@@ -78,7 +78,7 @@ pygame.mouse.set_visible(False)
 mlevel.load(units, enemies)
 def clicknowhere():
     world_mpos = mlevel.screen_to_world(*mpos)
-    for i in units:
+    for i in units + enemies:
         hitbox = i.gethitbox()
         if hitbox.collidepoint(world_mpos):
             return False
@@ -108,8 +108,7 @@ def mining_stone_mission(coords, stone):
 def attack_mission(enemy):
     for i in units:
         if i.select == True and isinstance(i, player.Warrior):
-            i.mission = 'attack'
-            i.target_obj = enemy
+            i.set_attack_target(enemy)
             
 
 while True:
@@ -188,9 +187,9 @@ while True:
     for i in units:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         if c != 0:
-            i.update(False, units, mlevel)
+            i.update(False, units, mlevel, enemies)
         else:
-            i.update(click, units, mlevel)
+            i.update(click, units, mlevel, enemies)
         if i.mustmove == True:
             i.moving(mlevel, units + enemies)
     for i in enemies:
@@ -216,7 +215,7 @@ while True:
             if click == True:
                 mining_stone_mission(get_interaction_target(i), i)
     for i in enemies:
-        if i.gethitbox().move(-mlevel.xcamera, -mlevel.ycamera).collidepoint(mpos):
+        if i.gethitbox().collidepoint(world_mpos):
             hover_state = 'attack'
             current_cursor = cursor_sword
             if click == True:
