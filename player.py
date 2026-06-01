@@ -5,6 +5,8 @@ import bar
 import particle
 
 class Warrior:
+    AUTO_TARGET_DISTANCE = 500
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -19,6 +21,7 @@ class Warrior:
         self.bar = bar.Bar(200)
         self.dir = 'r'
         self.mission = None
+        self.target_obj = None
         self.attackdistance = 100
         self.selectimg = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_04.png', 1)
         self.anims:dict[str, animation.Animation] = {}
@@ -38,7 +41,7 @@ class Warrior:
         self.bar.val = self.hp
         if self.hp != self.bar.maxval:
                 self.bar.render(screen, self.x, self.y, xcamera, ycamera)
-    def update(self, click, units, mlevel):
+    def update(self, click, units, mlevel, enemies=None):
         self.anims[self.state].update()
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
             if click == True:
@@ -46,33 +49,69 @@ class Warrior:
                     self.select = False
                 else:
                     self.select = True
-        if self.mustmove == True:
+        if self.mission == 'attack':
+            self.update_attack(enemies or [])
+        elif self.mustmove == True:
             self.state = 'run'
         else:
             self.state = 'idle'
-        if self.mission == 'attack' and self.needstop():
-            self.state = 'attack'
-            self.mustmove = False
-           
-            if self.anims['attack'].index == 3:
-                self.target_obj.hp -= self.damage
-                if self.target_obj.hp < 1:
-                    self.mission = None
-            if self.targetx > self.hitbox.centerx:
-                self.dir = 'r'
-            else:
-                self.dir = 'l'
-            if self.gethitbox().centerx < self.target_obj.gethitbox().centerx:
-                self.dir = 'r'
-            else:
-                self.dir = 'l'
-        elif self.mission == 'attack':
-            self.targetx = self.target_obj.x
-            self.targety = self.target_obj.y
         if self.hp < 1:
             dust = particle.Dust(self.x, self.y, mlevel.xcamera, mlevel.ycamera)
             particle.particles.append(dust)
             units.remove(self)
+    def update_attack(self, enemies):
+        if self.target_obj is None or self.target_obj.hp < 1:
+            if not self.acquire_nearest_enemy(enemies):
+                self.state = 'idle'
+                return
+
+        self.targetx = self.target_obj.x
+        self.targety = self.target_obj.y
+        if not self.needstop():
+            self.state = 'run'
+            self.mustmove = True
+            return
+
+        self.state = 'attack'
+        self.mustmove = False
+        if self.anims['attack'].index == 3:
+            self.target_obj.hp -= self.damage
+            if self.target_obj.hp < 1:
+                self.acquire_nearest_enemy(enemies)
+        if self.target_obj is not None:
+            if self.gethitbox().centerx < self.target_obj.gethitbox().centerx:
+                self.dir = 'r'
+            else:
+                self.dir = 'l'
+    def set_attack_target(self, enemy):
+        if enemy is not None and enemy is not self.target_obj:
+            self.anims['attack'].reset()
+        self.target_obj = enemy
+        if enemy is None:
+            self.mission = None
+            self.mustmove = False
+            return False
+
+        self.mission = 'attack'
+        self.targetx = enemy.x
+        self.targety = enemy.y
+        self.mustmove = not self.needstop()
+        return True
+    def acquire_nearest_enemy(self, enemies):
+        nearest = None
+        nearest_distance = self.AUTO_TARGET_DISTANCE
+        center = self.gethitbox().center
+        for enemy in enemies:
+            if enemy.hp < 1:
+                continue
+            enemy_center = enemy.gethitbox().center
+            dx = enemy_center[0] - center[0]
+            dy = enemy_center[1] - center[1]
+            distance = (dx * dx + dy * dy)**.5
+            if distance <= nearest_distance:
+                nearest = enemy
+                nearest_distance = distance
+        return self.set_attack_target(nearest)
     def moving(self, mlevel, units):
         distance, dx, dy, size = self.get_distance_to_target()
         if abs(distance) < 1:
@@ -173,8 +212,8 @@ class Pawn(Warrior):
         self.bar = bar.Bar(100)
     def render(self, screen, xcamera, ycamera, scale=1):
         return super().render(screen, xcamera, ycamera, scale)
-    def update(self, click, units, mlevel):
-        super().update(click, units, mlevel)
+    def update(self, click, units, mlevel, enemies=None):
+        super().update(click, units, mlevel, enemies)
         self.interact_with_resource('felling tree', 'interact_axe')
         self.interact_with_resource('mining stone', 'interact_pickaxe')
     def interact_with_resource(self, mission, anim_name):
