@@ -11,12 +11,6 @@ import rightclick
 import particle
 
 pygame.init()
-def autoattack_slot():
-    global autoattackmode
-    if autoattackmode == False:
-        autoattackmode = True
-    else:
-        autoattackmode = False
 def selectslot_all():
     for i in units:
         i.select = True
@@ -50,6 +44,17 @@ def selectslot():
     
     else:
         secondmenu = None
+secondmenu_build = None
+def buildslot():
+    global secondmenu_build
+    if secondmenu_build == None:
+        if menu.x < screen.get_width() / 2:
+            secondmenu_build = rightclick.Menu(menu.x + 200, menu.y, ['House', 'Archery', 'Barrack', 'Castle', 'Monastery', 'Tower'])
+        else:
+            secondmenu_build = rightclick.Menu(menu.x - 200, menu.y, ['House', 'Archery', 'Barrack', 'Castle', 'Monastery', 'Tower'])
+    
+    else:
+        secondmenu_build = None
 
 info = pygame.display.Info()
 
@@ -132,9 +137,12 @@ while True:
                     c += 1
                 if secondmenu != None and secondmenu.get_hitbox().collidepoint(mpos):
                     c += 1
+                if secondmenu_build != None and secondmenu_build.get_hitbox().collidepoint(mpos):
+                    c += 1
                 if c == 0:
                     menu = None
                     secondmenu = None
+                    secondmenu_build = None
             if clicknowhere() == True and c == 0:
                 targetx, targety = mlevel.screen_to_world(*mpos)
                 for j in units:
@@ -145,11 +153,13 @@ while True:
                         j.mission = None
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 3:
             if menu == None:
-                menu = rightclick.Menu(mpos[0], mpos[1], ['Select', 'Build', 'Auto Attack'])
+                menu = rightclick.Menu(mpos[0], mpos[1], ['Select', 'Build'])
                 menu.button[0].slot = selectslot
+                menu.button[1].slot = buildslot
             else:
                 menu = None
                 secondmenu = None
+                secondmenu_build = None
         if i.type == pygame.MOUSEBUTTONUP and i.button == 1:
             moving = False
             click = False
@@ -170,18 +180,22 @@ while True:
     if pressed[pygame.K_a]:
         menu = None
         secondmenu = None
+        secondmenu_build = None
         mlevel.xcamera -= camera_step
     if pressed[pygame.K_d]:
         menu = None
         secondmenu = None
+        secondmenu_build = None
         mlevel.xcamera += camera_step
     if pressed[pygame.K_s]:
         menu = None
         secondmenu = None
+        secondmenu_build = None
         mlevel.ycamera += camera_step
     if pressed[pygame.K_w]:
         menu = None
         secondmenu = None
+        secondmenu_build = None
         mlevel.ycamera -= camera_step
     mlevel.render(screen)
     for i in units:
@@ -227,6 +241,8 @@ while True:
         menu.render(screen, click)
     if secondmenu != None:
         secondmenu.render(screen, click)
+    if secondmenu_build != None:
+        secondmenu_build.render(screen, click)
     if hover_state == None:
         current_cursor = cursor_arrow
 
