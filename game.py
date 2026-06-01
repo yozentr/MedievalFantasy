@@ -11,6 +11,12 @@ import rightclick
 import particle
 
 pygame.init()
+def autoattack_slot():
+    global autoattackmode
+    if autoattackmode == False:
+        autoattackmode = True
+    else:
+        autoattackmode = False
 def selectslot_all():
     for i in units:
         i.select = True
@@ -33,9 +39,9 @@ def selectslot():
     global secondmenu
     if secondmenu == None:
         if menu.x < screen.get_width() / 2:
-            secondmenu = rightclick.Menu(menu.x + 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns', 'Archers'])
+            secondmenu = rightclick.Menu(menu.x + 200, menu.y, ['Unselect','All', 'Warriors', 'Pawns', 'Archers'])
         else:
-            secondmenu = rightclick.Menu(menu.x - 155, menu.y, ['Unselect','All', 'Warriors', 'Pawns', 'Archers'])
+            secondmenu = rightclick.Menu(menu.x - 200, menu.y, ['Unselect','All', 'Warriors', 'Pawns', 'Archers'])
         secondmenu.button[0].slot = unselectslot
         secondmenu.button[1].slot = selectslot_all
         secondmenu.button[2].slot = selectslot_warrior
@@ -65,6 +71,7 @@ current_cursor = cursor_arrow
 hover_state = None
 menu = None
 secondmenu = None
+autoattackmode = False
 
 pygame.mouse.set_visible(False)
 
@@ -139,7 +146,7 @@ while True:
                         j.mission = None
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 3:
             if menu == None:
-                menu = rightclick.Menu(mpos[0], mpos[1], ['Select', 'Build'])
+                menu = rightclick.Menu(mpos[0], mpos[1], ['Select', 'Build', 'Auto Attack'])
                 menu.button[0].slot = selectslot
             else:
                 menu = None

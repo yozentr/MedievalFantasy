@@ -1,6 +1,15 @@
 import pygame
+import utils
+
 pygame.init()
-font = pygame.font.Font(None, 40)
+font = pygame.font.Font('font BikiniBottom-Regular.otf', 30)
+img1 = utils.loadimg('images/UI Elements/UI Elements/Buttons/SmallBlueSquareButton_Pressed.png', 1)
+img1 = img1.subsurface(img1.get_bounding_rect())
+img2 = utils.loadimg('images/UI Elements/UI Elements/Buttons/SmallRedSquareButton_Pressed.png', 1)
+img2 = img2.subsurface(img2.get_bounding_rect())
+
+img1 = pygame.transform.scale(img1, (200, 60))
+img2 = pygame.transform.scale(img2, (200, 60))
 
 class Menu:
     def __init__(self, x, y, names):
@@ -24,11 +33,11 @@ class Button:
         self.x = x
         self.y = y
     def render(self, screen, click):
-        hitbox = pygame.draw.rect(screen, (0, 0, 0), [self.x, self.y, 150, 60])
+        hitbox = screen.blit(img1, (self.x, self.y))
         if hitbox.collidepoint(pygame.mouse.get_pos()):
-            hitbox = pygame.draw.rect(screen, (50, 50, 50), [self.x, self.y, 150, 60])
+            hitbox = screen.blit(img2, (self.x, self.y))
             if click == True:
                 self.slot()
-        screen.blit(self.textimg, (self.x, hitbox.centery - self.textimg.get_height() / 2))
+        screen.blit(self.textimg, (self.x + 40, hitbox.centery - self.textimg.get_height() / 2))
     def get_hitbox(self):
         return pygame.Rect(self.x, self.y, 150, 60)
