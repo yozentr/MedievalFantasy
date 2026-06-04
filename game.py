@@ -9,6 +9,7 @@ import random
 import inventory
 import rightclick
 import particle
+import buildings
 
 pygame.init()
 def selectslot_all():
@@ -66,6 +67,7 @@ lastcamy = mlevel.ycamera
 moving = False
 units = []
 enemies = []
+
 decorations.loadtrees()
 cursor_arrow = utils.loadimg('images/UI Elements/UI Elements/Cursors/Cursor_01.png', 1)
 cursor_axe = utils.loadimg('images/Terrain/Resources/Tools/Tool_02.png', 1)
@@ -78,9 +80,10 @@ menu = None
 secondmenu = None
 autoattackmode = False
 
+
 pygame.mouse.set_visible(False)
 
-mlevel.load(units, enemies)
+mlevel.load(units, enemies, buildings.buildings)
 def clicknowhere():
     world_mpos = mlevel.screen_to_world(*mpos)
     for i in units + enemies:
@@ -234,6 +237,8 @@ while True:
             current_cursor = cursor_sword
             if click == True:
                 attack_mission(i)
+    for i in buildings.buildings:
+        i.render(screen, mlevel.xcamera, mlevel.ycamera)
     for i in particle.particles:
         i.render(screen)
     inventory.render(screen)

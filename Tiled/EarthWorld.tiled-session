@@ -98,8 +98,8 @@
             "scale": 1,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 4178,
-                "y": 3063
+                "x": 4262,
+                "y": 3492
             }
         },
         "World.tmx#Decorations": {
@@ -112,7 +112,7 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Units/Blue Units/Archer",
+    "last.imagePath": "C:/Users/777/OneDrive/Документы/MedievalFantasy/images/Buildings/Blue Buildings",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "World.tmx",
@@ -129,6 +129,7 @@
     ],
     "project": "EarthWorld.tiled-project",
     "recentFiles": [
+        "House2.tsx",
         "EnemyWarrior_Idle.tsx",
         "Stone.tsx",
         "Tree3.tsx",
@@ -139,14 +140,13 @@
         "Tilemap_color5.tsx",
         "Tilemap_color3.tsx",
         "Tilemap_color2.tsx",
-        "World.tmx",
-        "House1.tsx"
+        "World.tmx"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 192,
-        "width": 192
+        "height": 64,
+        "width": 64
     },
     "tileset.type": 0
 }
