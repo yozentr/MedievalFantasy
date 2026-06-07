@@ -3,6 +3,7 @@ import pygame
 import utils
 import bar
 import particle
+import constans
 
 class Warrior:
     AUTO_TARGET_DISTANCE = 500
@@ -35,7 +36,8 @@ class Warrior:
         self.hitbox = self.hitbox.inflate(-hitbox_shrink, -hitbox_shrink)
         whit = self.gethitbox()
         #whit = whit.inflate(-95, -95)
-        pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(whit, xcamera, ycamera, scale), 2)
+        if constans.DEBUG_DRAW:
+            pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(whit, xcamera, ycamera, scale), 2)
         if self.select == True:
             screen.blit(self.selectimg, [self.hitbox.centerx - self.selectimg.get_width() / 2, self.hitbox.centery - self.selectimg.get_height() / 2])
         self.bar.val = self.hp
@@ -99,7 +101,7 @@ class Warrior:
         return True
     def acquire_nearest_enemy(self, enemies):
         nearest = None
-        nearest_distance = self.AUTO_TARGET_DISTANCE
+        nearest_distance_sq = self.AUTO_TARGET_DISTANCE * self.AUTO_TARGET_DISTANCE
         center = self.gethitbox().center
         for enemy in enemies:
             if enemy.hp < 1:
@@ -107,10 +109,10 @@ class Warrior:
             enemy_center = enemy.gethitbox().center
             dx = enemy_center[0] - center[0]
             dy = enemy_center[1] - center[1]
-            distance = (dx * dx + dy * dy)**.5
-            if distance <= nearest_distance:
+            distance_sq = dx * dx + dy * dy
+            if distance_sq <= nearest_distance_sq:
                 nearest = enemy
-                nearest_distance = distance
+                nearest_distance_sq = distance_sq
         return self.set_attack_target(nearest)
     def moving(self, mlevel, units):
         distance, dx, dy, size = self.get_distance_to_target()
@@ -149,8 +151,7 @@ class Warrior:
         return pygame.rect.Rect([self.x, self.y], self.anims[self.state].what_size_of_img()).inflate(-140, -140)
     def collisionx(self, mlevel, dir):
         self.hitbox = self.gethitbox()
-        for i in mlevel.borders:
-            hit = pygame.rect.Rect(i[0], i[1], 64, 64)
+        for hit in mlevel.iter_border_rects_near(self.hitbox):
             if hit.colliderect(self.hitbox):
                 self.mustmove = False
                 if dir == 'r':
@@ -161,8 +162,7 @@ class Warrior:
 
     def collisiony(self, mlevel, dir):
         self.hitbox = self.gethitbox()
-        for i in mlevel.borders:
-            hit = pygame.rect.Rect(i[0], i[1], 64, 64)
+        for hit in mlevel.iter_border_rects_near(self.hitbox):
             if hit.colliderect(self.hitbox):
                 self.mustmove = False
                 if dir == 'u':
