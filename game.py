@@ -10,6 +10,7 @@ import inventory
 import rightclick
 import particle
 import buildings
+Font30 = pygame.font.Font("font BikiniBottom-Regular.otf", 30)
 
 pygame.init()
 def selectslot_all():
@@ -45,17 +46,14 @@ def selectslot():
     
     else:
         secondmenu = None
-secondmenu_build = None
 def buildslot():
-    global secondmenu_build
-    if secondmenu_build == None:
-        if menu.x < screen.get_width() / 2:
-            secondmenu_build = rightclick.Menu(menu.x + 200, menu.y, ['House', 'Archery', 'Barrack', 'Castle', 'Monastery', 'Tower'])
-        else:
-            secondmenu_build = rightclick.Menu(menu.x - 200, menu.y, ['House', 'Archery', 'Barrack', 'Castle', 'Monastery', 'Tower'])
-    
+    global buildmode
+    if buildmode == True:
+        buildmode = False
     else:
-        secondmenu_build = None
+        buildmode = True
+    
+    
 
 info = pygame.display.Info()
 
@@ -79,17 +77,34 @@ hover_state = None
 menu = None
 secondmenu = None
 buildmode = False
-
+buildcost = [
+    {'Wood Resource': 6, 'Stone Resource': 1},
+    {'Wood Resource': 2, 'Stone Resource': 6},
+    {'Wood Resource': 4, 'Stone Resource': 13},
+    {'Wood Resource': 3, 'Stone Resource': 0},
+    {'Wood Resource': 8, 'Stone Resource': 1},
+    {'Wood Resource': 0, 'Stone Resource': 3}
+]
+buildingsimg = [
+    utils.loadimg("images\Buildings\Blue Buildings\Archery.png", 1),
+    utils.loadimg("images\Buildings\Blue Buildings\Barracks.png", 1),
+    utils.loadimg("images\Buildings\Blue Buildings\Castle.png", 1),
+    utils.loadimg("images\Buildings\Blue Buildings\House2.png", 1),
+    utils.loadimg("images\Buildings\Blue Buildings\Monastery.png", 1),
+    utils.loadimg("images\Buildings\Blue Buildings\Tower.png", 1)
+]
+buildingsindex = 3
 
 pygame.mouse.set_visible(False)
 
 mlevel.load(units, enemies, buildings.buildings)
 def clicknowhere():
     world_mpos = mlevel.screen_to_world(*mpos)
-    for i in units + enemies:
-        hitbox = i.gethitbox()
-        if hitbox.collidepoint(world_mpos):
-            return False
+    for group in (units, enemies):
+        for i in group:
+            hitbox = i.gethitbox()
+            if hitbox.collidepoint(world_mpos):
+                return False
     return True
 
 def get_interaction_target(obj):
@@ -121,6 +136,7 @@ def attack_mission(enemy):
 
 while True:
     fps.tick(60)
+    f = fps.get_fps()
     screen.fill('black')
     events = pygame.event.get()
     mpos = pygame.mouse.get_pos()
@@ -130,6 +146,16 @@ while True:
         if i.type == pygame.KEYDOWN:
             if i.key == pygame.K_ESCAPE:
                 quit()
+            if i.key == pygame.K_UP:
+                if buildingsindex == len(buildingsimg) - 1:
+                    buildingsindex = 0
+                else:
+                    buildingsindex += 1
+            if i.key == pygame.K_DOWN:
+                if buildingsindex == 0:
+                    buildingsindex = len(buildingsimg) - 1
+                else:
+                    buildingsindex -= 1
         if i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
             lastcamx = mpos[0]
             lastcamy = mpos[1]
@@ -140,12 +166,9 @@ while True:
                     c += 1
                 if secondmenu != None and secondmenu.get_hitbox().collidepoint(mpos):
                     c += 1
-                if secondmenu_build != None and secondmenu_build.get_hitbox().collidepoint(mpos):
-                    c += 1
                 if c == 0:
                     menu = None
                     secondmenu = None
-                    secondmenu_build = None
             if clicknowhere() == True and c == 0:
                 targetx, targety = mlevel.screen_to_world(*mpos)
                 for j in units:
@@ -162,7 +185,6 @@ while True:
             else:
                 menu = None
                 secondmenu = None
-                secondmenu_build = None
         if i.type == pygame.MOUSEBUTTONUP and i.button == 1:
             moving = False
             click = False
@@ -183,28 +205,30 @@ while True:
     if pressed[pygame.K_a]:
         menu = None
         secondmenu = None
-        secondmenu_build = None
         mlevel.xcamera -= camera_step
     if pressed[pygame.K_d]:
         menu = None
         secondmenu = None
-        secondmenu_build = None
         mlevel.xcamera += camera_step
     if pressed[pygame.K_s]:
         menu = None
         secondmenu = None
-        secondmenu_build = None
         mlevel.ycamera += camera_step
     if pressed[pygame.K_w]:
         menu = None
         secondmenu = None
-        secondmenu_build = None
         mlevel.ycamera -= camera_step
     mlevel.render(screen)
     if buildmode == True:
         mlevel.background = mlevel.background_net
-        screen.blit(buildings.houseimg, ((mpos[0] + mlevel.xcamera) // buildings.gridsize * buildings.gridsize - mlevel.xcamera, (mpos[1] + mlevel.ycamera) // buildings.gridsize * buildings.gridsize - mlevel.ycamera))
-    else:
+        buildingsimg[buildingsindex].set_alpha(200)
+        if buildcost[buildingsindex]['Wood Resource'] <= inventory.inv['Wood Resource'] and buildcost[buildingsindex]['Stone Resource'] <= inventory.inv['Stone Resource']:
+
+            screen.blit(buildingsimg[buildingsindex], ((mpos[0] + mlevel.xcamera) // buildings.gridsize * buildings.gridsize - mlevel.xcamera, (mpos[1] + mlevel.ycamera) // buildings.gridsize * buildings.gridsize - mlevel.ycamera))
+        else:
+            #Сделать красным цветом постройку
+            buildingsimg[buildingsindex].fill('red', special_flags=pygame.BLEND_RGBA_MULT)
+            screen.blit(buildingsimg[buildingsindex], ((mpos[0] + mlevel.xcamera) // buildings.gridsize * buildings.gridsize - mlevel.xcamera, (mpos[1] + mlevel.ycamera) // buildings.gridsize * buildings.gridsize - mlevel.ycamera))
         mlevel.background = mlevel.backgroundorig
     for i in units:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
@@ -243,19 +267,19 @@ while True:
             if click == True:
                 attack_mission(i)
     for i in buildings.buildings:
-        i.render(screen, mlevel.xcamera, mlevel.ycamera)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in particle.particles:
-        i.render(screen)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     inventory.render(screen)
     if menu != None:
         menu.render(screen, click)
     if secondmenu != None:
         secondmenu.render(screen, click)
-    if secondmenu_build != None:
-        secondmenu_build.render(screen, click)
     if hover_state == None:
         current_cursor = cursor_arrow
 
     screen.blit(current_cursor, mpos)
+    fpsimg = Font30.render(str(fps), True, 'white')
+    screen.blit(fpsimg, (20, 20))
 
     pygame.display.update()

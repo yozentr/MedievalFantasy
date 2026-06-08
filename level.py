@@ -5,8 +5,10 @@ import player
 import enemies as enemyunits
 import math
 import buildings as buildings_m
+import constans
 
 class Level:
+    TILE_SIZE = 64
     ZOOM_FACTOR = 1.1
     MIN_ZOOM_LEVEL = -2
     MAX_ZOOM_LEVEL = 5
@@ -19,6 +21,8 @@ class Level:
         self.zoom_level = 0
         self.xcamera = 3000
         self.ycamera = 3000
+        self._scaled_view_cache_key = None
+        self._scaled_view_cache = None
         self.load_borders()
 
     def load_borders(self):
@@ -28,7 +32,7 @@ class Level:
             if i[2] != 0:
                 x = i[0] * 64
                 y = i[1] * 64
-                self.borders[(x, y)] = None
+                self.borders[(x, y)] = pygame.Rect(x, y, self.TILE_SIZE, self.TILE_SIZE)
 
 
 
@@ -49,9 +53,9 @@ class Level:
 
         if self.scale == 1:
             screen.blit(visible_part, [offset_x, offset_y])
-            for i in self.borders:
-                border_rect = pygame.Rect(i[0], i[1], 64, 64)
-                pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(border_rect, self.xcamera, self.ycamera, self.scale))
+            if constans.DEBUG_DRAW:
+                for border_rect in self.borders.values():
+                    pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(border_rect, self.xcamera, self.ycamera, self.scale))
             return
             
 
@@ -59,7 +63,11 @@ class Level:
             max(1, round(visible_width * self.scale)),
             max(1, round(visible_height * self.scale)),
         ]
-        scaled_visible_part = pygame.transform.scale(visible_part, scaled_size)
+        cache_key = (source_x, source_y, visible_width, visible_height, self.scale)
+        if cache_key != self._scaled_view_cache_key:
+            self._scaled_view_cache = pygame.transform.scale(visible_part, scaled_size)
+            self._scaled_view_cache_key = cache_key
+        scaled_visible_part = self._scaled_view_cache
         screen.blit(scaled_visible_part, [offset_x, offset_y])
         
 
@@ -75,6 +83,19 @@ class Level:
         max_y = max(0.0, self.background.get_height() - viewport_size[1] / self.scale)
         self.xcamera = min(max(self.xcamera, 0.0), max_x)
         self.ycamera = min(max(self.ycamera, 0.0), max_y)
+
+    def iter_border_rects_near(self, rect):
+        tile_size = self.TILE_SIZE
+        left = (rect.left // tile_size - 1) * tile_size
+        right = (rect.right // tile_size + 1) * tile_size
+        top = (rect.top // tile_size - 1) * tile_size
+        bottom = (rect.bottom // tile_size + 1) * tile_size
+
+        for x in range(left, right + tile_size, tile_size):
+            for y in range(top, bottom + tile_size, tile_size):
+                border = self.borders.get((x, y))
+                if border is not None:
+                    yield border
 
     def resize_everything(self, sizing, anchor_pos=None):
         zoom_delta = 1 if sizing == 1 else -1 if sizing == 0 else 0

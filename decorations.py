@@ -5,6 +5,7 @@ import animation
 import bar
 import random
 import inventory
+import constans
 
 imgtrees = utils.loadimages('images/Terrain/Resources/Wood/Trees/Tree3.png', 1, 8)
 imgstump = utils.loadimg('images/Terrain/Resources/Wood/Trees/Stump 3.png', 1)
@@ -84,7 +85,8 @@ class Stone:
         self.bar.val = self.hp
         screen_x, screen_y = utils.world_to_screen(self.x, self.y, xcamera, ycamera, scale)
         screen.blit(utils.scale_image(self.img, scale), (round(screen_x), round(screen_y)))
-        pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(self.get_hitbox(), xcamera, ycamera, scale), 2)
+        if constans.DEBUG_DRAW:
+            pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(self.get_hitbox(), xcamera, ycamera, scale), 2)
         if self.hp != self.bar.maxval:
             self.bar.render(screen, self.x, self.y, xcamera, ycamera, scale)
             if self.hp < 1:
