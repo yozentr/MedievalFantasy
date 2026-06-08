@@ -42,7 +42,7 @@ class Warrior:
             screen.blit(self.selectimg, [self.hitbox.centerx - self.selectimg.get_width() / 2, self.hitbox.centery - self.selectimg.get_height() / 2])
         self.bar.val = self.hp
         if self.hp != self.bar.maxval:
-                self.bar.render(screen, self.x, self.y, xcamera, ycamera)
+            self.bar.render(screen, self.x, self.y, xcamera, ycamera, scale)
     def update(self, click, units, mlevel, enemies=None):
         self.anims[self.state].update()
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):

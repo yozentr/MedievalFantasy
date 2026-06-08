@@ -30,7 +30,7 @@ class EnemyWarrior:
             pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(whit, xcamera, ycamera, scale), 2)
         self.bar.val = self.hp
         if self.hp != self.bar.maxval:
-                self.bar.render(screen, self.x, self.y, xcamera, ycamera)
+            self.bar.render(screen, self.x, self.y, xcamera, ycamera, scale)
 
     def update(self, units, mlevel, enemies):
         self.anims[self.state].update()

@@ -240,9 +240,9 @@ while True:
             if click == True:
                 attack_mission(i)
     for i in buildings.buildings:
-        i.render(screen, mlevel.xcamera, mlevel.ycamera)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in particle.particles:
-        i.render(screen)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     inventory.render(screen)
     if menu != None:
         menu.render(screen, click)
