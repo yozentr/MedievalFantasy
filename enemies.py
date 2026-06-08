@@ -3,6 +3,7 @@ import animation
 import utils
 import bar
 import particle
+import constans
 
 class EnemyWarrior:
     def __init__(self, x, y):
@@ -25,10 +26,11 @@ class EnemyWarrior:
         self.hitbox = self.hitbox.inflate(-hitbox_shrink, -hitbox_shrink)
         whit = self.gethitbox()
         #whit = whit.inflate(-95, -95)
-        pygame.draw.rect(screen, 'red', [whit.x - xcamera * scale, whit.y - ycamera * scale, whit.width, whit.height], 2)
+        if constans.DEBUG_DRAW:
+            pygame.draw.rect(screen, 'red', utils.world_rect_to_screen(whit, xcamera, ycamera, scale), 2)
         self.bar.val = self.hp
         if self.hp != self.bar.maxval:
-                self.bar.render(screen, self.x, self.y, xcamera, ycamera)
+            self.bar.render(screen, self.x, self.y, xcamera, ycamera, scale)
 
     def update(self, units, mlevel, enemies):
         self.anims[self.state].update()
@@ -70,8 +72,7 @@ class EnemyWarrior:
         self.collision_units(units, mlevel)
     def collisionx(self, mlevel, dir):
         self.hitbox = self.gethitbox()
-        for i in mlevel.borders:
-            hit = pygame.rect.Rect(i[0], i[1], 64, 64)
+        for hit in mlevel.iter_border_rects_near(self.hitbox):
             if hit.colliderect(self.hitbox):
                 self.mustmove = False
                 if dir == 'r':
@@ -82,8 +83,7 @@ class EnemyWarrior:
 
     def collisiony(self, mlevel, dir):
         self.hitbox = self.gethitbox()
-        for i in mlevel.borders:
-            hit = pygame.rect.Rect(i[0], i[1], 64, 64)
+        for hit in mlevel.iter_border_rects_near(self.hitbox):
             if hit.colliderect(self.hitbox):
                 self.mustmove = False
                 if dir == 'u':
@@ -93,18 +93,18 @@ class EnemyWarrior:
         self.y = self.hitbox.y - 70
     def search_for_aim(self, units, mlevel):
         nearest = None
-        mindist = None
+        mindist_sq = None
         for i in units:
-            dist = self.get_distance_to_target(i)
+            dist_sq = self.get_distance_to_target_sq(i)
             if nearest == None:
                 nearest = i
-                mindist = dist
-            if dist < mindist:
+                mindist_sq = dist_sq
+            if dist_sq < mindist_sq:
                 nearest = i
-                mindist = dist
-        if mindist == None or mindist > 500:
+                mindist_sq = dist_sq
+        if mindist_sq == None or mindist_sq > 500 * 500:
             return
-        if mindist < 500 and mindist > 100:
+        if mindist_sq < 500 * 500 and mindist_sq > 100 * 100:
             self.state = 'run'
             if nearest.x > self.x:
                 self.x += 1
@@ -123,14 +123,14 @@ class EnemyWarrior:
         else:
             self.state = 'idle'
             self.target_obj = nearest
-            if mindist < 100:
+            if mindist_sq < 100 * 100:
                 self.state = 'attack1'
     def get_distance_to_target(self, target):
-        size = self.anims[self.state].what_size_of_img()
+        return self.get_distance_to_target_sq(target)**.5
+
+    def get_distance_to_target_sq(self, target):
         x = self.x
         y = self.y
         dx = target.x - x
         dy = target.y - y
-        return (dx * dx + dy * dy)**.5
-
-        
+        return dx * dx + dy * dy

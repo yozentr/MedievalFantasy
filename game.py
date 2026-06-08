@@ -86,10 +86,11 @@ pygame.mouse.set_visible(False)
 mlevel.load(units, enemies, buildings.buildings)
 def clicknowhere():
     world_mpos = mlevel.screen_to_world(*mpos)
-    for i in units + enemies:
-        hitbox = i.gethitbox()
-        if hitbox.collidepoint(world_mpos):
-            return False
+    for group in (units, enemies):
+        for i in group:
+            hitbox = i.gethitbox()
+            if hitbox.collidepoint(world_mpos):
+                return False
     return True
 
 def get_interaction_target(obj):
@@ -201,6 +202,7 @@ while True:
         secondmenu_build = None
         mlevel.ycamera -= camera_step
     mlevel.render(screen)
+    all_units = units + enemies
     for i in units:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         if c != 0:
@@ -208,11 +210,11 @@ while True:
         else:
             i.update(click, units, mlevel, enemies)
         if i.mustmove == True:
-            i.moving(mlevel, units + enemies)
+            i.moving(mlevel, all_units)
     for i in enemies:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         i.update(units, mlevel, enemies)
-        i.moving(mlevel, units + enemies)
+        i.moving(mlevel, all_units)
     hover_state = None
     world_mpos = mlevel.screen_to_world(*mpos)
     for i in decorations.trees:
@@ -238,9 +240,9 @@ while True:
             if click == True:
                 attack_mission(i)
     for i in buildings.buildings:
-        i.render(screen, mlevel.xcamera, mlevel.ycamera)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     for i in particle.particles:
-        i.render(screen)
+        i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
     inventory.render(screen)
     if menu != None:
         menu.render(screen, click)
