@@ -6,13 +6,13 @@ import enemies as enemyunits
 import math
 import buildings as buildings_m
 
-
 class Level:
     ZOOM_FACTOR = 1.1
     MIN_ZOOM_LEVEL = -2
     MAX_ZOOM_LEVEL = 5
 
     def __init__(self):
+        self.background_net = utils.loadimg('images/Maps/World_net.png', 1)
         self.backgroundorig = utils.loadimg('images/Maps/World.png', 1).convert_alpha()
         self.background = self.backgroundorig
         self.scale = 1.0
@@ -36,8 +36,8 @@ class Level:
         viewport_size = screen.get_size()
         self.clamp_camera(viewport_size)
 
-        map_width = self.backgroundorig.get_width()
-        map_height = self.backgroundorig.get_height()
+        map_width = self.background.get_width()
+        map_height = self.background.get_height()
         visible_width = min(map_width, max(1, math.ceil(viewport_size[0] / self.scale) + 2))
         visible_height = min(map_height, max(1, math.ceil(viewport_size[1] / self.scale) + 2))
         source_x = min(max(int(self.xcamera), 0), max(0, map_width - visible_width))
@@ -45,7 +45,7 @@ class Level:
         offset_x = -round((self.xcamera - source_x) * self.scale)
         offset_y = -round((self.ycamera - source_y) * self.scale)
         visible_rect = pygame.Rect(source_x, source_y, visible_width, visible_height)
-        visible_part = self.backgroundorig.subsurface(visible_rect)
+        visible_part = self.background.subsurface(visible_rect)
 
         if self.scale == 1:
             screen.blit(visible_part, [offset_x, offset_y])
@@ -71,8 +71,8 @@ class Level:
         return (x - self.xcamera) * self.scale, (y - self.ycamera) * self.scale
 
     def clamp_camera(self, viewport_size):
-        max_x = max(0.0, self.backgroundorig.get_width() - viewport_size[0] / self.scale)
-        max_y = max(0.0, self.backgroundorig.get_height() - viewport_size[1] / self.scale)
+        max_x = max(0.0, self.background.get_width() - viewport_size[0] / self.scale)
+        max_y = max(0.0, self.background.get_height() - viewport_size[1] / self.scale)
         self.xcamera = min(max(self.xcamera, 0.0), max_x)
         self.ycamera = min(max(self.ycamera, 0.0), max_y)
 

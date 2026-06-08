@@ -78,7 +78,7 @@ current_cursor = cursor_arrow
 hover_state = None
 menu = None
 secondmenu = None
-autoattackmode = False
+buildmode = False
 
 
 pygame.mouse.set_visible(False)
@@ -201,6 +201,11 @@ while True:
         secondmenu_build = None
         mlevel.ycamera -= camera_step
     mlevel.render(screen)
+    if buildmode == True:
+        mlevel.background = mlevel.background_net
+        screen.blit(buildings.houseimg, ((mpos[0] + mlevel.xcamera) // buildings.gridsize * buildings.gridsize - mlevel.xcamera, (mpos[1] + mlevel.ycamera) // buildings.gridsize * buildings.gridsize - mlevel.ycamera))
+    else:
+        mlevel.background = mlevel.backgroundorig
     for i in units:
         i.render(screen, mlevel.xcamera, mlevel.ycamera, mlevel.scale)
         if c != 0:
@@ -252,4 +257,5 @@ while True:
         current_cursor = cursor_arrow
 
     screen.blit(current_cursor, mpos)
+
     pygame.display.update()

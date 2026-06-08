@@ -2,7 +2,7 @@ import pygame
 import utils
 import bar
 
-
+gridsize = 64
 buildings = []
 houseimg = utils.loadimg('images/Buildings/Blue Buildings/House2.png', 1)
 
